@@ -28,6 +28,12 @@ Interpret backend dependencies as three coordinated parts, not one linear chain:
 - `composition/` is the backend composition root. It may depend on `runtime/`, `types/`, `config/`, `repo/`, and `service/`, and should build the wired objects that make the runtime executable.
 - `runtime/` should stay focused on transport and process concerns. It may depend on `types/` and `config/`, but should not import `composition/`, `repo/`, or `service/` directly.
 
+For stable backend features, prefer placing store contracts, domain-facing record shapes, and shared domain errors in a lower business boundary such as `types/`, rather than letting `service/` invent private storage contracts that `composition/` must translate manually.
+
+When a repository implementation can satisfy a stable domain-facing contract directly, prefer having `repo/` implement that contract instead of adding forwarding adapters in `composition/`.
+
+`composition/` should stay focused on wiring concrete implementations into runtime-ready objects. It should not become the long-term home of repository pass-through methods, storage error translation tables, or domain record reshaping.
+
 This is the preferred dependency model for backend code. Keep exceptions rare and well justified.
 
 ## Backend layers to add when needed
@@ -47,6 +53,7 @@ Do not add these layers preemptively. Add them only when they make the backend e
 
 - Do not access the database outside `repo/`.
 - Do not mix backend composition or dependency wiring into `repo/`, `service/`, or `runtime/`. Keep that code in `composition/`.
+- Do not turn `composition/` into a hidden repository adapter layer when a stable lower-boundary contract would keep the design simpler.
 - Do not put core business logic in `runtime/`, handlers, or controllers.
 - Do not let `types/` depend on `config/`, `repo/`, `service/`, `composition/`, or `runtime/`.
 - Do not let `config/` depend on `repo/`, `service/`, `composition/`, or `runtime/`.

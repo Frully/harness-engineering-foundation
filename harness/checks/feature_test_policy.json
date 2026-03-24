@@ -1,0 +1,42 @@
+{
+  "features": {
+    "auth": {
+      "runtimes": {
+        "backend": {
+          "path_patterns": [
+            "workspace/backend/**/auth/**/*_test.go"
+          ],
+          "scenario_patterns": {
+            "register": "Test.*Register",
+            "login": "Test.*Login",
+            "logout": "Test.*Logout"
+          }
+        },
+        "frontend": {
+          "path_patterns": [
+            "workspace/frontend/src/test/auth/**/*.test.ts",
+            "workspace/frontend/src/test/auth/**/*.test.tsx",
+            "workspace/frontend/tests/auth/**/*.spec.ts",
+            "workspace/frontend/tests/auth/**/*.spec.tsx"
+          ],
+          "scenario_patterns": {
+            "register": "it\\(.*register|test\\(.*register",
+            "login": "it\\(.*login|test\\(.*login",
+            "logout": "it\\(.*logout|test\\(.*logout"
+          }
+        },
+        "mobile": {
+          "path_patterns": [
+            "workspace/mobile/test/auth/**/*_test.dart",
+            "workspace/mobile/integration_test/auth/**/*_test.dart"
+          ],
+          "scenario_patterns": {
+            "register": "testWidgets\\(.*register|test\\(.*register",
+            "login": "testWidgets\\(.*login|test\\(.*login",
+            "logout": "testWidgets\\(.*logout|test\\(.*logout"
+          }
+        }
+      }
+    }
+  }
+}

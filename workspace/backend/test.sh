@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
 
-printf 'backend test: placeholder only. Replace workspace/backend/test.sh with real unit or integration tests when the backend stack is chosen.\n'
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+BACKEND_DIR="$ROOT_DIR/workspace/backend"
+
+printf 'backend test: go test ./...\n'
+cd "$BACKEND_DIR"
+go test ./...

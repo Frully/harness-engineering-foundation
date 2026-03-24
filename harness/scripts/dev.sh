@@ -4,6 +4,7 @@ set -u
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CHECK_SCRIPT="$ROOT_DIR/harness/checks/check_architecture.sh"
+FEATURE_TEST_CHECK="$ROOT_DIR/harness/checks/check_feature_tests.sh"
 ERROR_COUNT=0
 
 workspace_has_business_code() {
@@ -49,6 +50,13 @@ printf 'Running baseline architecture checks...\n'
 
 if ! bash "$CHECK_SCRIPT"; then
   printf 'Checks failed. Fix the reported issues before continuing.\n' >&2
+  exit 1
+fi
+
+printf 'Running feature test coverage checks...\n'
+
+if ! bash "$FEATURE_TEST_CHECK"; then
+  printf 'Feature test checks failed. Fix the reported issues before continuing.\n' >&2
   exit 1
 fi
 

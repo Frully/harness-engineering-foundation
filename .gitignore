@@ -1,0 +1,13 @@
+workspace/frontend/node_modules/
+workspace/frontend/dist/
+workspace/frontend/playwright-report/
+workspace/frontend/test-results/
+workspace/frontend/tsconfig.tsbuildinfo
+workspace/backend/.artifacts/
+workspace/frontend/.artifacts/
+workspace/mobile/.artifacts/
+workspace/backend/testdata/*.sqlite
+workspace/mobile/.dart_tool/
+workspace/mobile/build/
+workspace/mobile/.flutter-plugins
+workspace/mobile/.flutter-plugins-dependencies

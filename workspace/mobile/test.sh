@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
 
-printf 'mobile test: placeholder only. Replace workspace/mobile/test.sh with real mobile tests when the mobile stack is chosen.\n'
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+MOBILE_DIR="$ROOT_DIR/workspace/mobile"
+
+printf 'mobile test: flutter test\n'
+cd "$MOBILE_DIR"
+flutter pub get
+flutter test test/auth/auth_flow_test.dart

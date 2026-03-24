@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: ${IMAGE_NAMESPACE:-ghcr.io/local}/harness-engineering-foundation-backend:${IMAGE_TAG:-latest}
+    environment:
+      PORT: "8080"
+      DB_PATH: /data/backend.sqlite
+      COOKIE_SECURE: "false"
+      ALLOWED_ORIGIN: http://localhost:8088
+    volumes:
+      - backend-data:/data
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: ${IMAGE_NAMESPACE:-ghcr.io/local}/harness-engineering-foundation-frontend:${IMAGE_TAG:-latest}
+    depends_on:
+      - backend
+    ports:
+      - "8088:80"
+
+volumes:
+  backend-data:

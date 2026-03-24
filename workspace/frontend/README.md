@@ -1,13 +1,16 @@
 # Frontend Workspace
 
-Place web UI code and frontend-specific calling logic here.
+This workspace contains the React + TypeScript web shell for the shared auth demo.
 
-Recommended lightweight structure, added only when needed:
+Structure:
 
-- `components/`
-- `pages/`
-- `services/`
-- `types/`
+- `src/components/`: reusable UI building blocks
+- `src/pages/`: login, register, and authenticated home views
+- `src/services/`: cookie-aware API calls and CSRF token persistence
+- `src/types/`: shared frontend contracts
 
-Do not mix backend or mobile code into this directory.
-Use `pages/` consistently for frontend page containers; do not introduce `screens/` in frontend.
+The web app uses real browser constraints:
+
+- the session token stays in an HttpOnly cookie
+- the frontend restores auth state through `GET /api/me`
+- the only readable client-side credential is the CSRF token

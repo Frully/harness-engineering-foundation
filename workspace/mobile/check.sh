@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
 
-printf 'mobile check: placeholder only. Replace workspace/mobile/check.sh with real lint, typecheck, or build validation when the mobile stack is chosen.\n'
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+MOBILE_DIR="$ROOT_DIR/workspace/mobile"
+
+printf 'mobile check: flutter pub get, analyze\n'
+cd "$MOBILE_DIR"
+flutter pub get
+flutter analyze

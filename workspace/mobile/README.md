@@ -1,12 +1,13 @@
 # Mobile Workspace
 
-Place mobile UI code and mobile-specific calling logic here.
+This workspace contains the Flutter client for the shared auth demo.
 
-Recommended lightweight structure, added only when needed:
+Structure:
 
-- `screens/`
-- `components/`
-- `services/`
-- `types/`
+- `lib/screens/`: register, login, and authenticated home screens
+- `lib/components/`: reusable mobile form building blocks
+- `lib/services/`: bearer-token auth client and local persistence
+- `lib/types/`: shared mobile contracts
 
-Do not mix frontend web code or backend server code into this directory.
+The mobile app uses the same backend session model as the web app, but carries it through
+`Authorization: Bearer <token>`.

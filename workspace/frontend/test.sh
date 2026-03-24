@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
 
-printf 'frontend test: placeholder only. Replace workspace/frontend/test.sh with real frontend tests when the frontend stack is chosen.\n'
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+FRONTEND_DIR="$ROOT_DIR/workspace/frontend"
+
+printf 'frontend test: vitest\n'
+cd "$FRONTEND_DIR"
+npm install
+npm run test -- --run

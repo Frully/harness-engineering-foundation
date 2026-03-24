@@ -48,6 +48,8 @@ This document defines the repository quality gate and completion boundary.
 - `workspace/mobile/services/` must not depend on `screens/` or `components/`.
 - `workspace/mobile/components/` must not depend on `screens/`.
 - Placeholder-only workspace `check.sh`, `test.sh`, and `smoke.sh` hooks are rejected once real business code exists in that workspace.
+- Active baseline feature tests must be grouped by feature instead of hidden in generic catch-all test files.
+- Active feature scenario coverage is enforced through the repository's feature test policy instead of hardcoded feature names inside the harness script.
 
 ### Documented but still manual
 

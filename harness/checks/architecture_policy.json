@@ -1,0 +1,45 @@
+{
+  "backend": {
+    "layers": {
+      "types": [],
+      "config": ["types"],
+      "repo": ["types", "config"],
+      "service": ["types", "config", "repo"],
+      "composition": ["types", "config", "repo", "service", "runtime"],
+      "runtime": ["types", "config"]
+    },
+    "forbiddenImports": {
+      "service": ["database/sql", "modernc.org/sqlite"]
+    }
+  },
+  "frontend": {
+    "sourceRoot": "workspace/frontend/src",
+    "layers": {
+      "types": [],
+      "services": ["types"],
+      "components": ["types"],
+      "pages": ["types", "services", "components"]
+    },
+    "forbiddenCrossRuntimePatterns": [
+      "workspace/backend",
+      "/backend/",
+      "workspace/mobile",
+      "/mobile/"
+    ]
+  },
+  "mobile": {
+    "sourceRoot": "workspace/mobile/lib",
+    "layers": {
+      "types": [],
+      "services": ["types"],
+      "components": ["types"],
+      "screens": ["types", "services", "components"]
+    },
+    "forbiddenCrossRuntimePatterns": [
+      "workspace/backend",
+      "/backend/",
+      "workspace/frontend",
+      "/frontend/"
+    ]
+  }
+}
