@@ -140,10 +140,8 @@ code,
 }
 
 .auth-shell {
-  display: grid;
-  grid-template-columns: minmax(32rem, 1.4fr) minmax(25rem, 0.96fr);
-  gap: 1.5rem;
-  align-items: stretch;
+  width: min(42rem, 100%);
+  margin: 0 auto;
 }
 
 .dashboard-shell {
@@ -179,7 +177,8 @@ code,
 
 .panel-hero,
 .dashboard-hero-panel,
-.panel-loading {
+.panel-loading,
+.panel-auth {
   background:
     linear-gradient(
       140deg,
@@ -203,6 +202,10 @@ code,
     rgba(255, 252, 247, 0.96),
     rgba(252, 246, 237, 0.9)
   );
+  padding: 2rem;
+}
+
+.panel-auth {
   padding: 2rem;
 }
 
@@ -367,6 +370,16 @@ h1 {
   font-size: 1.06rem;
   line-height: 1.66;
   color: var(--ink-soft);
+}
+
+.auth-copy {
+  max-width: 34rem;
+  margin-bottom: 0;
+}
+
+.auth-rail {
+  margin-top: 1.25rem;
+  margin-bottom: 1.55rem;
 }
 
 .signal-rail {
@@ -571,6 +584,7 @@ h1 {
 }
 
 .return-row {
+  display: inline-flex;
   margin-top: 1rem;
 }
 
@@ -628,7 +642,6 @@ h1 {
 }
 
 @media (max-width: 1180px) {
-  .auth-shell,
   .hero-layout,
   .dashboard-grid,
   .dashboard-lower-grid,
@@ -647,6 +660,7 @@ h1 {
   .panel-hero,
   .dashboard-hero-panel,
   .panel-loading,
+  .panel-auth,
   .panel-form,
   .panel-inset,
   .panel-command {

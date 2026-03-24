@@ -22,7 +22,7 @@ void main() {
     await tester.tap(find.byKey(const Key('submitButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Mobile session restored.'), findsOneWidget);
+    expect(find.text('Session restored.'), findsOneWidget);
     expect(find.text('login@example.com'), findsOneWidget);
   });
 
@@ -53,7 +53,7 @@ void main() {
       await tester.tap(find.byKey(const Key('submitButton')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Mobile session restored.'), findsOneWidget);
+      expect(find.text('Session restored.'), findsOneWidget);
       expect(find.text('register@example.com'), findsOneWidget);
     },
   );
@@ -76,7 +76,7 @@ void main() {
     await tester.tap(find.byKey(const Key('logoutButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Return to the mobile console.'), findsOneWidget);
+    expect(find.text('Sign in.'), findsOneWidget);
   });
 
   testWidgets('auth register blocks mismatched password confirmation', (
@@ -104,7 +104,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Passwords do not match.'), findsOneWidget);
-    expect(find.text('Mobile session restored.'), findsNothing);
+    expect(find.text('Session restored.'), findsNothing);
   });
 
   testWidgets('auth register blocks weak passwords', (tester) async {
@@ -130,7 +130,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(passwordPolicyMessage), findsOneWidget);
-    expect(find.text('Mobile session restored.'), findsNothing);
+    expect(find.text('Session restored.'), findsNothing);
   });
 }
 

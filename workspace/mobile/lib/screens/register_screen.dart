@@ -17,17 +17,15 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      title: 'Provision a mobile operator.',
-      eyebrow: 'Session mint',
-      summary:
-          'Registration opens the shared server-side session and hands the handheld runtime a bearer token to preserve the same operator identity.',
-      footerLabel: 'Already provisioned?',
-      footerAction: 'Go back to login',
+      title: 'Create account.',
+      eyebrow: 'Create account',
+      summary: 'Create your account to continue.',
+      footerLabel: 'Already have an account?',
+      footerAction: 'Sign in.',
       onSwitch: onSwitch,
       child: AuthForm(
-        actionLabel: 'Register and issue bearer token',
-        description:
-            'Registration creates the shared server-side session and returns a bearer token for Flutter to persist.',
+        actionLabel: 'Create account',
+        description: 'Enter your account details.',
         mode: AuthFormMode.register,
         onSubmit: onSubmit,
       ),

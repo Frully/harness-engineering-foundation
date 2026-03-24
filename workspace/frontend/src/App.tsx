@@ -105,14 +105,12 @@ export function App() {
         <section className="panel panel-loading" aria-label="Loading">
           <div className="command-strip">
             <span>BOOT</span>
-            <span>SESSION PROBE</span>
-            <span>COOKIE CHECK</span>
+            <span>SESSION</span>
+            <span>CHECK</span>
           </div>
-          <p className="eyebrow">Booting session</p>
-          <h1>Rehydrating the editorial shell.</h1>
-          <p className="muted">
-            Checking the secure cookie and restoring your live view.
-          </p>
+          <p className="eyebrow">Restore session</p>
+          <h1>Restoring session.</h1>
+          <p className="muted">Checking the current session.</p>
           <div className="loading-meter" aria-hidden="true">
             <span />
           </div>

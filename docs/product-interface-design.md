@@ -118,6 +118,7 @@ The design language is shared across web and mobile, but each runtime should exp
 - Keep generous breathing room around major content blocks, but let negative space feel deliberate and cinematic rather than merely spacious.
 - Let important panels feel architectural through padding, border, depth, and overlap pressure.
 - Use pane logic, rails, and sectional separation to make the interface feel operated and inspectable.
+- Auth and other short entry flows should prefer one dominant panel instead of keeping a permanent left narrative panel. Simplicity and reachability take priority when the task is focused and phone-friendly.
 - Web may express this most clearly through split panels.
 - Mobile should preserve the same hierarchy through stacked sections, spacing rhythm, and panel contrast instead of copying desktop layout literally.
 

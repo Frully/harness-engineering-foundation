@@ -10,18 +10,17 @@ export function RegisterPage({
 }) {
   return (
     <AuthCard
-      eyebrow="Session mint"
-      title="Provision a new operator."
-      subtitle="Registration immediately creates the shared backend session, sets the secure cookie, and returns the readable CSRF token."
+      eyebrow="Create account"
+      title="Create account."
+      subtitle="Create your account to continue."
       footer={
         <p>
-          Already provisioned?{' '}
-          <Link to="/login">Return to the sign in console.</Link>
+          Already have an account? <Link to="/login">Sign in.</Link>
         </p>
       }
     >
       <AuthForm
-        actionLabel="Create account and issue cookie"
+        actionLabel="Create account"
         mode="register"
         onSubmit={onSubmit}
       />

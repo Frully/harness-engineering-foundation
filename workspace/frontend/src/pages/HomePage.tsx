@@ -22,12 +22,8 @@ export function HomePage({
         <div className="dashboard-grid">
           <div className="dashboard-copy">
             <p className="eyebrow">Authenticated signal</p>
-            <h1>Cookie session restored.</h1>
-            <p className="hero-copy">
-              This shell recovered the current operator via{' '}
-              <code>GET /api/me</code> while keeping the session token
-              inaccessible to JavaScript.
-            </p>
+            <h1>Session restored.</h1>
+            <p className="hero-copy">Your account is active in this browser.</p>
 
             <div className="signal-rail">
               <span>Server session ledger</span>
@@ -45,21 +41,21 @@ export function HomePage({
               </div>
               <div>
                 <dt>Mode</dt>
-                <dd>Web cookie + CSRF</dd>
+                <dd>Web session</dd>
               </div>
               <div>
-                <dt>Session boundary</dt>
-                <dd>Shared backend session table</dd>
+                <dt>Session model</dt>
+                <dd>Shared backend session</dd>
               </div>
               <div>
                 <dt>Protection</dt>
-                <dd>HttpOnly cookie inaccessible to JS</dd>
+                <dd>Cookie kept outside JS</dd>
               </div>
             </dl>
             <ul className="terminal-list" aria-label="Session checks">
-              <li>Session restored through a server-backed ledger.</li>
-              <li>Protected writes stay gated by the readable CSRF token.</li>
-              <li>Client-side shell never parses the session secret.</li>
+              <li>Session restored from the shared backend record.</li>
+              <li>Protected writes still require the CSRF token.</li>
+              <li>The cookie stays outside client-side code.</li>
             </ul>
           </aside>
         </div>
@@ -69,24 +65,19 @@ export function HomePage({
             <span className="label">Recovery loop</span>
             <strong>Boot → cookie → GET /api/me → shell</strong>
             <p className="muted small">
-              The authenticated view is restored from the backend record, not
-              reconstructed from local cookie access.
+              The browser restores state from the backend session.
             </p>
           </article>
           <article className="ledger-card">
             <span className="label">Mutation policy</span>
             <strong>Readable CSRF + secure cookie</strong>
-            <p className="muted small">
-              Browser writes are accepted only when the CSRF token accompanies
-              the protected session transport.
-            </p>
+            <p className="muted small">Writes require the CSRF token.</p>
           </article>
           <article className="ledger-card">
             <span className="label">Observation mode</span>
-            <strong>Real smoke feedback closes the loop</strong>
+            <strong>Smoke feedback stays visible</strong>
             <p className="muted small">
-              Register, restore, login, and logout remain visible to the same
-              operator-facing surface.
+              Register, restore, login, and logout stay observable.
             </p>
           </article>
         </section>
@@ -100,24 +91,21 @@ export function HomePage({
               <span className="label">Session restore path</span>
               <strong>Boot → cookie → me → shell</strong>
               <p className="muted small">
-                The browser restores state through the shared backend record,
-                not a locally parsed token.
+                The browser restores state through the shared backend record.
               </p>
             </article>
             <article className="telemetry-card">
               <span className="label">Mutation discipline</span>
               <strong>CSRF required for writes</strong>
               <p className="muted small">
-                Protected mutations only complete when the readable CSRF token
-                accompanies the secure cookie.
+                Protected writes only complete with the CSRF token.
               </p>
             </article>
             <article className="telemetry-card">
               <span className="label">Observation mode</span>
               <strong>AI-observable smoke coverage</strong>
               <p className="muted small">
-                Register, restore, login, and logout are all visible in the
-                operational feedback loop.
+                Register, restore, login, and logout stay in the feedback loop.
               </p>
             </article>
           </div>
@@ -125,16 +113,13 @@ export function HomePage({
 
         <aside className="panel panel-command">
           <div className="monitor-strip">Current command</div>
-          <p className="command-summary">
-            Revoke the active cookie session and return the browser to the
-            anonymous shell.
-          </p>
+          <p className="command-summary">End the current browser session.</p>
           <button
             className="primary-button"
             onClick={() => void onLogout()}
             type="button"
           >
-            Logout and revoke current session
+            Log out
           </button>
         </aside>
       </section>

@@ -85,9 +85,7 @@ class _AuthFormState extends State<AuthForm> {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 22),
-          const _FormStrip(
-            items: ['OPERATOR ID', 'SECRET', 'CONTROLLED ENTRY'],
-          ),
+          const _FormStrip(items: ['ACCOUNT', 'ENTRY']),
           const SizedBox(height: 18),
           _CommandField(
             key: const Key('emailField'),
@@ -179,22 +177,7 @@ class _AuthFormState extends State<AuthForm> {
           FilledButton(
             key: const Key('submitButton'),
             onPressed: _submitting ? null : _handleSubmit,
-            child: Text(
-              _submitting ? 'Sending mobile signal...' : widget.actionLabel,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(255, 255, 255, 0.58),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: InterfacePalette.line),
-            ),
-            child: Text(
-              'The handheld console uses the same shared server session model as the web shell, but transports it through a persisted bearer token.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            child: Text(_submitting ? 'Working...' : widget.actionLabel),
           ),
         ],
       ),

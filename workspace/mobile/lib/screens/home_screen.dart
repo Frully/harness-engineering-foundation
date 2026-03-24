@@ -30,12 +30,12 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'Mobile session restored.',
+                    'Session restored.',
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'The handheld runtime recovered the current operator through the persisted bearer token and the shared backend session ledger.',
+                    'Your account is active in this app.',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 18),
@@ -82,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                 FilledButton(
                   key: const Key('logoutButton'),
                   onPressed: () => onLogout(),
-                  child: const Text('Logout and clear bearer token'),
+                  child: const Text('Log out'),
                 ),
               ],
             );

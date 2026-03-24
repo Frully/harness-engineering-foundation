@@ -17,17 +17,15 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      title: 'Return to the mobile console.',
-      eyebrow: 'Mobile bearer flow',
-      summary:
-          'The handheld shell mirrors the same command-chamber language as the web reference while restoring access through a persisted bearer token.',
+      title: 'Sign in.',
+      eyebrow: 'Sign in',
+      summary: 'Use your account to continue.',
       footerLabel: 'Need an account?',
-      footerAction: 'Create one now',
+      footerAction: 'Create one.',
       onSwitch: onSwitch,
       child: AuthForm(
-        actionLabel: 'Login with bearer token',
-        description:
-            'Flutter persists a bearer token locally, then restores the shared session with GET /api/me on launch.',
+        actionLabel: 'Sign in',
+        description: 'Enter your account details.',
         mode: AuthFormMode.login,
         onSubmit: onSubmit,
       ),

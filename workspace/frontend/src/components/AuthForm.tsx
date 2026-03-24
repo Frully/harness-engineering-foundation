@@ -61,10 +61,7 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
     <form className="auth-form" onSubmit={handleSubmit}>
       <div className="form-strip">
         <span>{mode === 'register' ? 'SESSION MINT' : 'SESSION RESUME'}</span>
-        <span>COOKIE / CSRF</span>
-        <span>
-          {mode === 'register' ? 'ACCOUNT PROVISION' : 'OPERATOR RETURN'}
-        </span>
+        <span>{mode === 'register' ? 'CREATE' : 'SIGN IN'}</span>
       </div>
 
       <label className="field">
@@ -128,16 +125,8 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       ) : null}
 
       <button className="primary-button" disabled={isSubmitting} type="submit">
-        {isSubmitting ? 'Transmitting signal...' : actionLabel}
+        {isSubmitting ? 'Working...' : actionLabel}
       </button>
-
-      <div className="command-note command-note-soft">
-        <span className="label">Transport discipline</span>
-        <p className="muted small">
-          The browser relies on the secure cookie for session transport and the
-          readable CSRF token for protected writes.
-        </p>
-      </div>
     </form>
   );
 }

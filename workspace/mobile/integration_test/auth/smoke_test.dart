@@ -61,7 +61,7 @@ void main() {
       await registerThroughUi(tester, email);
       await logoutThroughUi(tester);
 
-      expect(find.text('Return to the mobile console.'), findsOneWidget);
+      expect(find.text('Sign in.'), findsOneWidget);
     },
   );
 }
@@ -100,11 +100,11 @@ Future<void> loginThroughUi(WidgetTester tester, String email) async {
 Future<void> logoutThroughUi(WidgetTester tester) async {
   await tester.tap(find.byKey(const Key('logoutButton')));
   await tester.pumpAndSettle(const Duration(seconds: 2));
-  expect(find.text('Return to the mobile console.'), findsOneWidget);
+  expect(find.text('Sign in.'), findsOneWidget);
 }
 
 Future<void> expectAuthenticatedShell(WidgetTester tester, String email) async {
-  expect(find.text('Mobile session restored.'), findsOneWidget);
+  expect(find.text('Session restored.'), findsOneWidget);
   expect(find.text(email), findsOneWidget);
 }
 
@@ -112,7 +112,7 @@ Future<void> waitForAuthCompletion(WidgetTester tester) async {
   for (var attempt = 0; attempt < 30; attempt += 1) {
     await tester.pump(const Duration(milliseconds: 200));
 
-    if (find.text('Mobile session restored.').evaluate().isNotEmpty) {
+    if (find.text('Session restored.').evaluate().isNotEmpty) {
       return;
     }
 
