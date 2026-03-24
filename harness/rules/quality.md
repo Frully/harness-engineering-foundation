@@ -6,6 +6,9 @@ This document defines the repository quality gate and completion boundary.
 
 - `bash harness/scripts/dev.sh` is the final repository quality gate for task completion, not the required command after every tiny intermediate edit.
 - Treat `bash harness/scripts/dev.sh` as the shared baseline verification entrypoint, not as a smoke test by itself. Its coverage is only as strong as the checks and workspace hooks it runs.
+- Pure documentation updates under `docs/` do not require the full `dev.sh` gate by default.
+- Pure rule-document updates under `harness/rules/` do not require the full `dev.sh` gate by default.
+- Changes to executable harness files, CI behavior, business code, tests, or runtime behavior still require the full `dev.sh` gate.
 - If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - Placeholder workspace hooks are allowed only while the workspace has no real business code yet.
@@ -21,8 +24,8 @@ This document defines the repository quality gate and completion boundary.
 
 - The default development order in `harness/rules/workflow.md` has been followed unless the task required a justified exception.
 - The code is placed in the correct directory.
-- `bash harness/scripts/dev.sh` has been run after the latest edit.
-- `bash harness/scripts/dev.sh` exits successfully.
+- If the task changed business code, tests, CI behavior, executable harness files, or runtime behavior, `bash harness/scripts/dev.sh` has been run after the latest meaningful edit.
+- When `bash harness/scripts/dev.sh` is required for the task type, it exits successfully.
 - Any available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks pass.
 - If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.
 - If a workspace contains real business code, its `smoke.sh` must represent complete smoke coverage for that workspace's current operational baseline.

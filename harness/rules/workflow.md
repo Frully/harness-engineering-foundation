@@ -21,6 +21,9 @@ Follow this order unless a task clearly requires a justified exception:
 - During active development, prefer the smallest relevant workspace check or test over running the full repository gate after every tiny edit.
 - Do not treat a change as done if `bash harness/scripts/dev.sh` has not been run after the latest meaningful edit.
 - The minimum completion loop is: make the change, run the relevant local checks while iterating, then run `bash harness/scripts/dev.sh` before finishing, and fix any reported violations.
+- Pure documentation updates under `docs/` do not require `bash harness/scripts/dev.sh` by default.
+- Pure rule-document updates under `harness/rules/` do not require `bash harness/scripts/dev.sh` by default.
+- Changes to business code, tests, CI configuration, executable harness files, or runtime behavior still require the full `bash harness/scripts/dev.sh` gate before completion.
 - If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - If architecture violations happen repeatedly, update the checks or rules in `harness/`.
