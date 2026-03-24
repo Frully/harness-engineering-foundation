@@ -69,7 +69,8 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 - Preserve the current editorial control-room direction unless the task explicitly calls for a redesign.
 - Treat mobile as the handheld expression of the same warm, tactile, high-trust command surface used on web.
 - Keep the visual language intentional and distinctive. Do not drift toward generic default mobile-auth or dashboard styling.
-- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing mobile styling, layout, motion, or copy tone.
+- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing mobile styling, layout, or motion.
+- Use `harness/rules/copywriting.md` as the source of truth when changing mobile user-facing UI copy.
 
 ## Mobile design constraints
 

@@ -68,8 +68,6 @@ The list below is not a mandatory roadmap. It is a set of likely future rule are
 
 - `harness/rules/design.md`
   - for frontend and mobile visual style, interaction style, and layout consistency
-- `harness/rules/copywriting.md`
-  - for UI wording, tone, and message consistency
 - `harness/rules/api.md`
   - for request and response boundaries, adapters, and client/server contract handling
 - `harness/rules/config.md`

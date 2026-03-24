@@ -70,7 +70,8 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 - Preserve the current editorial control-room direction unless the task explicitly calls for a redesign.
 - Treat the frontend as a warm, tactile, high-trust command surface rather than a generic SaaS dashboard.
 - Keep the visual language intentional and distinctive. Do not drift toward interchangeable startup UI patterns.
-- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing frontend styling, layout, motion, or copy tone.
+- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing frontend styling, layout, or motion.
+- Use `harness/rules/copywriting.md` as the source of truth when changing frontend user-facing UI copy.
 
 ## Frontend design constraints
 
