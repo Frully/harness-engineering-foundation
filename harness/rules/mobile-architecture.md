@@ -63,3 +63,25 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 - Do not let reusable `components/` depend on `screens/` or contain screen-level request logic.
 - Do not rely on manual visual checking alone for active UI and interaction code.
 - Do not let reusable mobile components become the hidden home of unrelated screen workflows.
+
+## Mobile visual direction
+
+- Preserve the current editorial control-room direction unless the task explicitly calls for a redesign.
+- Treat mobile as the handheld expression of the same warm, tactile, high-trust command surface used on web.
+- Keep the visual language intentional and distinctive. Do not drift toward generic default mobile-auth or dashboard styling.
+- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing mobile styling, layout, motion, or copy tone.
+
+## Mobile design constraints
+
+- Mobile must preserve shared identity with the web runtime while translating it through handheld density and stacked composition.
+- Mobile styling must use shared design tokens for color, type, spacing, radius, border, shadow, and motion instead of scattering repeated raw values across unrelated screens and components.
+- Mobile should preserve the editorial material language: warm paper surfaces, deep ink text, oversized hierarchy, amber-led emphasis, visible borders, restrained but forceful motion, and selective TUI-inspired control grammar.
+- Mobile should preserve narrative-first hierarchy instead of collapsing into default platform-auth or dashboard styling.
+- If a mobile change introduces a repeated new visual value, a durable component role, or a material shift in tone, update `docs/product-interface-design.md` in the same task.
+
+## Mobile design prohibitions
+
+- Do not revert to generic fonts such as Inter, Arial, Roboto, SF Pro defaults, or default system stacks as the primary visual identity.
+- Do not introduce default Material-looking auth screens, list-heavy dashboard styling, or other out-of-the-box mobile UI aesthetics without deliberate restyling.
+- Do not add visual elements that fight the editorial direction unless the whole direction is being intentionally redesigned.
+- Do not let one-off screen styling bypass the shared visual tokens and fragment the cross-runtime interface.

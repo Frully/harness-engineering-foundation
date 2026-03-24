@@ -7,3 +7,4 @@ Use this directory for architecture notes, implementation plans, decisions, and 
 Current entry points:
 
 - [AUTH model](./auth.md)
+- [Product interface design direction](./product-interface-design.md)

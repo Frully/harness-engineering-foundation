@@ -40,6 +40,7 @@ This document defines what should be documented in `docs/` and when AI should cr
 - Prefer stable topic names such as `docs/auth.md`, `docs/api.md`, `docs/testing-strategy.md`, or `docs/development.md`.
 - Keep documents high-signal: describe the contract, behavior, and operational implications, not every implementation detail.
 - When behavior differs by runtime, state the shared rule first and then the runtime-specific differences.
+- Document names should match their real scope. If a document grows from one runtime or feature into a broader cross-runtime or cross-feature source of truth, rename the file and update all references in the same task instead of leaving a misleading narrow name in place.
 
 ## AI responsibilities
 

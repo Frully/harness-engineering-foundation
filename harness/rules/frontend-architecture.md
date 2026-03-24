@@ -64,3 +64,25 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 - Do not rely on manual visual checking alone for active UI and interaction code.
 - Do not let reusable UI components become the hidden home of unrelated business workflows.
 - Do not introduce `screens/` as a parallel page-container concept in frontend. Use `pages/` consistently.
+
+## Frontend visual direction
+
+- Preserve the current editorial control-room direction unless the task explicitly calls for a redesign.
+- Treat the frontend as a warm, tactile, high-trust command surface rather than a generic SaaS dashboard.
+- Keep the visual language intentional and distinctive. Do not drift toward interchangeable startup UI patterns.
+- Use [docs/product-interface-design.md](/Users/Frully/Projects/harness-engineering-foundation/docs/product-interface-design.md) as the shared cross-runtime design source of truth when changing frontend styling, layout, motion, or copy tone.
+
+## Frontend design constraints
+
+- Frontend must preserve shared identity with the mobile runtime while translating it through web-native layout and interaction patterns.
+- Frontend styling must use shared design tokens for color, type, spacing, radius, border, shadow, and motion instead of scattering repeated raw values across unrelated components.
+- Frontend should preserve the editorial material language: warm paper surfaces, deep ink text, oversized hierarchy, amber-led emphasis, visible borders, restrained but forceful motion, and selective TUI-inspired control grammar.
+- Frontend should favor dominant editorial composition over generic centered auth cards or interchangeable dashboard blocks.
+- If a frontend change introduces a repeated new visual value, a durable component role, or a material shift in tone, update `docs/product-interface-design.md` in the same task.
+
+## Frontend design prohibitions
+
+- Do not revert to generic fonts such as Inter, Arial, Roboto, or default system stacks as the primary visual identity.
+- Do not introduce purple-gradient-on-white, default glassmorphism, or generic AI-dashboard styling.
+- Do not add visual elements that fight the editorial direction unless the whole direction is being intentionally redesigned.
+- Do not let one-off component styling bypass the shared visual tokens and fragment the interface.
