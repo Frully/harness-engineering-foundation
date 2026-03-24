@@ -1,0 +1,8 @@
+name: harness_mobile_architecture_check
+publish_to: 'none'
+
+environment:
+  sdk: ^3.11.3
+
+dependencies:
+  analyzer: ^10.0.1

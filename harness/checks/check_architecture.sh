@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 POLICY_PATH="$ROOT_DIR/harness/checks/architecture_policy.json"
 ERROR_COUNT=0
 SOURCE_FILE_REGEX='.*\.(js|ts|jsx|tsx|py|go|rs|java|kt|swift|rb|php|c|cpp|m|mm)$'
+DART_BIN=""
 
 print_error() {
   printf 'ERROR: %s\n' "$1" >&2
@@ -108,6 +109,20 @@ check_manifest() {
   fi
 }
 
+resolve_dart_bin() {
+  if command -v dart >/dev/null 2>&1; then
+    command -v dart
+    return 0
+  fi
+
+  if [ -n "${FLUTTER_ROOT:-}" ] && [ -x "${FLUTTER_ROOT}/bin/dart" ]; then
+    printf '%s\n' "${FLUTTER_ROOT}/bin/dart"
+    return 0
+  fi
+
+  return 1
+}
+
 run_runtime_check() {
   local label="$1"
   shift
@@ -116,18 +131,40 @@ run_runtime_check() {
   fi
 }
 
+run_frontend_architecture_check() {
+  (
+    cd "$ROOT_DIR/harness/checks/frontend_architecture"
+    npm ci --ignore-scripts --no-audit --no-fund >/dev/null
+    node bin/frontend_architecture.mjs "$ROOT_DIR" "$POLICY_PATH"
+  )
+}
+
+run_mobile_architecture_check() {
+  if [ -z "$DART_BIN" ]; then
+    printf 'Dart SDK not found. Set PATH or FLUTTER_ROOT before running architecture checks.\n' >&2
+    return 1
+  fi
+
+  (
+    cd "$ROOT_DIR/harness/checks/mobile_architecture"
+    "$DART_BIN" pub get >/dev/null
+    "$DART_BIN" run bin/mobile_architecture.dart "$ROOT_DIR" "$POLICY_PATH"
+  )
+}
+
 check_root_business_files
 check_docs_for_business_code
 check_deploy_for_business_code
 check_forbidden_shared_directories
+DART_BIN="$(resolve_dart_bin || true)"
 
 check_manifest "backend" "workspace/backend/go.mod"
 check_manifest "frontend" "workspace/frontend/package.json"
 check_manifest "mobile" "workspace/mobile/pubspec.yaml"
 
 run_runtime_check "backend" go run "$ROOT_DIR/harness/checks/backend_architecture.go" "$ROOT_DIR" "$POLICY_PATH"
-run_runtime_check "frontend" node "$ROOT_DIR/harness/checks/frontend_architecture.mjs" "$ROOT_DIR" "$POLICY_PATH"
-run_runtime_check "mobile" dart "$ROOT_DIR/harness/checks/mobile_architecture.dart" "$ROOT_DIR" "$POLICY_PATH"
+run_runtime_check "frontend" run_frontend_architecture_check
+run_runtime_check "mobile" run_mobile_architecture_check
 
 if [ "$ERROR_COUNT" -gt 0 ]; then
   printf 'Architecture check failed with %s issue(s).\n' "$ERROR_COUNT" >&2

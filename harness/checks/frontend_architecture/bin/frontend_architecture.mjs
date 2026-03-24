@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import ts from 'typescript';
 
 const [rootDir, policyPath] = process.argv.slice(2);
 if (!rootDir || !policyPath) {
@@ -19,8 +20,7 @@ for (const file of listFiles(sourceRoot, ['.ts', '.tsx'])) {
     continue;
   }
 
-  const source = fs.readFileSync(file, 'utf8');
-  const imports = parseImports(source);
+  const imports = parseImports(file);
 
   for (const specifier of imports) {
     if (policy.forbiddenCrossRuntimePatterns.some((pattern) => specifier.includes(pattern))) {
@@ -62,26 +62,46 @@ function listFiles(directory, extensions) {
   return entries;
 }
 
-function parseImports(source) {
-  const matches = [];
-  const patterns = [
-    /import\s+[^'"]*['"]([^'"]+)['"]/g,
-    /export\s+[^'"]*from\s+['"]([^'"]+)['"]/g,
-  ];
+function parseImports(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    filePath.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
+  const imports = [];
 
-  for (const pattern of patterns) {
-    for (const match of source.matchAll(pattern)) {
-      matches.push(match[1]);
+  visit(sourceFile);
+  return imports;
+
+  function visit(node) {
+    if (ts.isImportDeclaration(node) && isStringLiteralLike(node.moduleSpecifier)) {
+      imports.push(node.moduleSpecifier.text);
     }
-  }
 
-  return matches;
+    if (ts.isExportDeclaration(node) && node.moduleSpecifier && isStringLiteralLike(node.moduleSpecifier)) {
+      imports.push(node.moduleSpecifier.text);
+    }
+
+    if (
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments.length === 1 &&
+      isStringLiteralLike(node.arguments[0])
+    ) {
+      imports.push(node.arguments[0].text);
+    }
+
+    ts.forEachChild(node, visit);
+  }
 }
 
 function resolveLayer(specifier, filePath, sourceRoot, layers) {
   if (specifier.startsWith('.')) {
     const resolved = resolveRelativeImport(specifier, filePath);
-    if (!resolved.startsWith(sourceRoot)) {
+    if (!isWithinRoot(resolved, sourceRoot)) {
       return null;
     }
     const relative = path.relative(sourceRoot, resolved);
@@ -114,4 +134,13 @@ function resolveRelativeImport(specifier, filePath) {
   }
 
   return base;
+}
+
+function isWithinRoot(candidatePath, rootPath) {
+  const relative = path.relative(rootPath, candidatePath);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isStringLiteralLike(node) {
+  return ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node);
 }
