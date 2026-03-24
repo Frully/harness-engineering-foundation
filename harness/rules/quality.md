@@ -5,7 +5,8 @@ This document defines the repository quality gate and completion boundary.
 ## Quality gate
 
 - After every code change, run `bash harness/scripts/dev.sh` before considering the task complete.
-- If a workspace has its own `check.sh` or `test.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
+- Treat `bash harness/scripts/dev.sh` as the shared baseline verification entrypoint, not as a smoke test by itself. Its coverage is only as strong as the checks and workspace hooks it runs.
+- If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - Placeholder workspace hooks are allowed only while the workspace has no real business code yet.
 - Once a workspace starts carrying real business code, placeholder hooks are no longer acceptable and the quality gate should fail until real checks and tests replace them.
@@ -21,8 +22,9 @@ This document defines the repository quality gate and completion boundary.
 - The code is placed in the correct directory.
 - `bash harness/scripts/dev.sh` has been run after the latest edit.
 - `bash harness/scripts/dev.sh` exits successfully.
-- Any available workspace `check.sh` and `test.sh` hooks pass.
-- If a workspace contains real business code, its `check.sh` and `test.sh` must not remain placeholder-only hooks.
+- Any available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks pass.
+- If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.
+- If a workspace contains real business code, its `smoke.sh` must represent complete smoke coverage for that workspace's current operational baseline.
 - If a repeated mistake is detected, prefer improving `harness/` so the mistake is easier to prevent next time.
 
 ## Rule coverage
@@ -34,9 +36,10 @@ This document defines the repository quality gate and completion boundary.
 - No business source files in `deploy/`.
 - Forbidden generic shared-code directories are not allowed at the repository root or directly under `workspace/`.
 - `workspace/backend/service/` must not implement direct database access.
-- `workspace/backend/runtime/` must not depend on `repo/` directly.
-- `workspace/backend/repo/` must not depend on `service/` or `runtime/`.
-- `workspace/backend/config/` must not depend on `repo/`, `service/`, or `runtime/`.
+- `workspace/backend/service/` must not depend on `composition/` or `runtime/`.
+- `workspace/backend/runtime/` must not depend on `composition/`, `repo/`, or `service/` directly.
+- `workspace/backend/repo/` must not depend on `service/`, `composition/`, or `runtime/`.
+- `workspace/backend/config/` must not depend on `repo/`, `service/`, `composition/`, or `runtime/`.
 - `workspace/backend/types/` must not depend on higher backend layers.
 - `workspace/frontend/` must not import backend or mobile code directly.
 - `workspace/frontend/services/` must not depend on `pages/` or `components/`.
@@ -44,7 +47,7 @@ This document defines the repository quality gate and completion boundary.
 - `workspace/mobile/` must not import backend or frontend code directly.
 - `workspace/mobile/services/` must not depend on `screens/` or `components/`.
 - `workspace/mobile/components/` must not depend on `screens/`.
-- Placeholder-only workspace hooks are rejected once real business code exists in that workspace.
+- Placeholder-only workspace `check.sh`, `test.sh`, and `smoke.sh` hooks are rejected once real business code exists in that workspace.
 
 ### Documented but still manual
 
@@ -52,6 +55,7 @@ This document defines the repository quality gate and completion boundary.
 - Whether harness logic has been mixed into business code.
 - Whether a new shared boundary has been justified well enough to exist.
 - Whether a rule document placed in `docs/` should be promoted into `harness/`.
+- Whether each workspace's smoke suite is complete for the current operational baseline and uses enough production realism.
 
 ### Natural next candidates for stronger enforcement
 

@@ -18,6 +18,6 @@ Follow this order unless a task clearly requires a justified exception:
 - Prefer checks and tests to discover problems early.
 - Do not treat a change as done if `bash harness/scripts/dev.sh` has not been run after the latest edit.
 - The minimum completion loop is: make the change, run `bash harness/scripts/dev.sh`, then fix any reported violations before continuing.
-- If a workspace has its own `check.sh` or `test.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
+- If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - If architecture violations happen repeatedly, update the checks or rules in `harness/`.

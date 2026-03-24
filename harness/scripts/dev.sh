@@ -14,6 +14,7 @@ workspace_has_business_code() {
     ! -name 'README.md' \
     ! -name 'check.sh' \
     ! -name 'test.sh' \
+    ! -name 'smoke.sh' \
     -print -quit 2>/dev/null | grep -q .
 }
 
@@ -55,14 +56,17 @@ printf 'Looking for workspace-specific hooks...\n'
 
 run_workspace_hook frontend check.sh
 run_workspace_hook frontend test.sh
+run_workspace_hook frontend smoke.sh
 run_workspace_hook backend check.sh
 run_workspace_hook backend test.sh
+run_workspace_hook backend smoke.sh
 run_workspace_hook mobile check.sh
 run_workspace_hook mobile test.sh
+run_workspace_hook mobile smoke.sh
 
 if [ "$ERROR_COUNT" -ne 0 ]; then
   printf 'Workspace hooks failed with %s issue(s).\n' "$ERROR_COUNT" >&2
   exit 1
 fi
 
-printf 'Checks passed. Minimal done loop: keep code in workspace/, run this script, and improve harness/ if the same issue repeats.\n'
+printf 'Baseline checks passed. This script is the shared verification entrypoint, not a substitute for deeper workspace checks or tests.\n'

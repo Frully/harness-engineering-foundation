@@ -8,6 +8,7 @@ Recommended lightweight structure, added only when needed:
 - `config/`
 - `repo/`
 - `service/`
+- `composition/`
 - `runtime/`
 
-Keep database access in `repo/`. Keep core business rules in `service/`, not in runtime handlers or controllers.
+Keep database access in `repo/`. Keep core business rules in `service/`. Put backend dependency wiring and runtime assembly in `composition/`, not in `runtime/`, handlers, controllers, or lower layers.
