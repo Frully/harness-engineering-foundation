@@ -4,30 +4,30 @@ This document defines the repository quality gate and completion boundary.
 
 ## Quality gate
 
-- `bash harness/scripts/dev.sh` is the final repository quality gate for task completion, not the required command after every tiny intermediate edit.
-- Treat `bash harness/scripts/dev.sh` as the shared baseline verification entrypoint, not as a smoke test by itself. Its coverage is only as strong as the checks and workspace hooks it runs.
-- Pure documentation updates under `docs/` do not require the full `dev.sh` gate by default.
-- Pure rule-document updates under `harness/rules/` do not require the full `dev.sh` gate by default.
-- Changes to executable harness files, CI behavior, business code, tests, or runtime behavior still require the full `dev.sh` gate.
-- If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
+- `bash harness/scripts/verify.sh` is the final repository quality gate for task completion, not the required command after every tiny intermediate edit.
+- Treat `bash harness/scripts/verify.sh` as the shared baseline verification entrypoint, not as a smoke test by itself. Its coverage is only as strong as the checks and workspace hooks it runs.
+- Pure documentation updates under `docs/` do not require the full `verify.sh` gate by default.
+- Pure rule-document updates under `harness/rules/` do not require the full `verify.sh` gate by default.
+- Changes to executable harness files, CI behavior, business code, tests, or runtime behavior still require the full `verify.sh` gate.
+- If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/verify.sh` must run it as part of the default loop.
 - Workspace `check.sh` hooks should include formatting verification that matches the runtime toolchain instead of relying on manual editor formatting.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - Placeholder workspace hooks are allowed only while the workspace has no real business code yet.
 - Once a workspace starts carrying real business code, placeholder hooks are no longer acceptable and the quality gate should fail until real checks and tests replace them.
-- CI should call the same `bash harness/scripts/dev.sh` entrypoint instead of duplicating logic in platform-specific config.
-- If `dev.sh` or required workspace hooks fail, the change is not complete.
+- CI should call the same `bash harness/scripts/verify.sh` entrypoint instead of duplicating logic in platform-specific config.
+- If `verify.sh` or required workspace hooks fail, the change is not complete.
 - If CI fails on the same entrypoint, the change is not complete even if the local edit appears correct.
 - If architecture violations happen repeatedly, update the checks or rules in `harness/`.
 - Once a workspace enters real feature development, treat real `check.sh` and `test.sh` coverage as part of the repository baseline for that workspace, not as an optional follow-up.
-- During development, use the smallest relevant local check or test to iterate quickly, then run the full `dev.sh` gate before finishing.
+- During development, use the smallest relevant local check or test to iterate quickly, then run the full `verify.sh` gate before finishing.
 - UI changes should include screenshot-based review of the affected screens or pages so visual drift, broken hierarchy, clipped states, and obvious interaction issues are caught before completion.
 
 ## Definition of done
 
 - The default development order in `harness/rules/workflow.md` has been followed unless the task required a justified exception.
 - The code is placed in the correct directory.
-- If the task changed business code, tests, CI behavior, executable harness files, or runtime behavior, `bash harness/scripts/dev.sh` has been run after the latest meaningful edit.
-- When `bash harness/scripts/dev.sh` is required for the task type, it exits successfully.
+- If the task changed business code, tests, CI behavior, executable harness files, or runtime behavior, `bash harness/scripts/verify.sh` has been run after the latest meaningful edit.
+- When `bash harness/scripts/verify.sh` is required for the task type, it exits successfully.
 - Any available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks pass.
 - Each workspace `check.sh` that validates real business code includes formatting verification appropriate to that runtime, such as `gofmt`, `biome format --check`, or `dart format --set-exit-if-changed`.
 - If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.

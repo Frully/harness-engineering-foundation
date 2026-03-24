@@ -6,8 +6,8 @@ Read this file before making changes in this repository.
 
 - Put business code only under `workspace/`.
 - Do not put business logic in the repository root, `docs/`, `deploy/`, or `harness/`.
-- After every code change, run `bash harness/scripts/dev.sh`.
-- A task is not complete until `bash harness/scripts/dev.sh` passes locally and in CI.
+- After every code change, run `bash harness/scripts/verify.sh`.
+- A task is not complete until `bash harness/scripts/verify.sh` passes locally and in CI.
 
 ## Detailed rules
 

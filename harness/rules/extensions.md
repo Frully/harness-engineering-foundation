@@ -86,7 +86,7 @@ Add one of these only when it solves a repeated problem that the current rules n
 - Architecture checks in `harness/checks/`
 - Workflow and orchestration scripts in `harness/scripts/`
 - Workspace-specific `check.sh` and `test.sh` hooks inside each workspace
-- CI configuration outside `harness/`, but always calling `bash harness/scripts/dev.sh`
+- CI configuration outside `harness/`, but always calling `bash harness/scripts/verify.sh`
 
 ## When harness should be updated
 
@@ -101,7 +101,7 @@ Add one of these only when it solves a repeated problem that the current rules n
 - First decide whether the problem is guidance, enforcement, or both.
 - Put durable normative guidance in `harness/rules/`.
 - Put executable enforcement in `harness/checks/` only when the rule is objective enough to verify cheaply and with acceptable false positives.
-- Wire default enforcement through `harness/scripts/dev.sh` instead of inventing an extra entrypoint.
+- Wire default enforcement through `harness/scripts/verify.sh` instead of inventing an extra entrypoint.
 - Keep CI calling the same shared entrypoint unless a platform-specific job genuinely requires an additional runtime wrapper.
 
 ## Anti-overfitting rules
@@ -126,7 +126,7 @@ Add one of these only when it solves a repeated problem that the current rules n
 4. Write the rule in plain language and keep the scope explicit.
 5. Record why the new rule exists in the rule document itself so future readers can understand the repeated failure it is meant to prevent.
 6. If the rule is machine-checkable, add or extend a script in `harness/checks/`.
-7. If the rule should run by default, connect it to `bash harness/scripts/dev.sh`.
+7. If the rule should run by default, connect it to `bash harness/scripts/verify.sh`.
 8. If failure should block integration, keep CI calling the same shared entrypoint.
 9. Update rule documentation so the new constraint is discoverable by future AI runs.
 

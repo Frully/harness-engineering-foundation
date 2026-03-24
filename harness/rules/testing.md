@@ -67,6 +67,6 @@ This document defines the minimum testing expectations for business code in the 
 
 ## Current repository state
 
-- `bash harness/scripts/dev.sh` runs all available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks.
+- `bash harness/scripts/verify.sh` runs all available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks.
 - If a workspace does not yet have meaningful real tests, treat that as unfinished quality coverage rather than a completed testing strategy.
 - The active baseline features for this repository are declared in `harness/checks/feature_test_policy.json`, and their tests should be visible as first-class testing units in each affected runtime.
