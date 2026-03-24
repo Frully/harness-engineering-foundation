@@ -122,12 +122,43 @@ jobs:
           name: android-smoke-artifacts
           path: workspace/mobile/.artifacts
 
+  ios-smoke:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.1'
+          cache-dependency-path: workspace/backend/go.sum
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Run iOS simulator smoke
+        run: bash workspace/mobile/ios_smoke.sh
+
+      - name: Upload iOS smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-smoke-artifacts
+          path: workspace/mobile/.artifacts
+
   release:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     needs:
       - quality-gate
       - android-smoke
+      - ios-smoke
     permissions:
       contents: read
       packages: write
