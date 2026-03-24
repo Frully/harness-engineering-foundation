@@ -70,10 +70,10 @@
               "workspace/mobile/integration_test/auth/**/*_test.dart"
             ],
             "scenario_patterns": {
-              "register": "testWidgets\\(.*register",
-              "session_restore": "testWidgets\\(.*restore",
-              "login": "testWidgets\\(.*login",
-              "logout": "testWidgets\\(.*logout"
+              "register": "auth smoke register",
+              "session_restore": "auth smoke restore",
+              "login": "auth smoke login",
+              "logout": "auth smoke logout"
             }
           }
         }

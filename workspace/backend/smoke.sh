@@ -48,7 +48,7 @@ if ! curl -fsS "$BASE_URL/healthz" >/dev/null 2>&1; then
   exit 1
 fi
 
-printf 'backend smoke: exercising web cookie flow\n'
+printf 'backend smoke: exercising web cookie register and session restore flow\n'
 WEB_REGISTER_HEADERS="$TMP_DIR/web-register.headers"
 WEB_REGISTER_BODY="$TMP_DIR/web-register.json"
 
@@ -92,7 +92,32 @@ if [ "$POST_LOGOUT_STATUS" != "401" ]; then
   exit 1
 fi
 
-printf 'backend smoke: exercising mobile bearer flow\n'
+printf 'backend smoke: exercising web cookie login flow\n'
+WEB_LOGIN_HEADERS="$TMP_DIR/web-login.headers"
+WEB_LOGIN_BODY="$TMP_DIR/web-login.json"
+
+curl -fsS \
+  -D "$WEB_LOGIN_HEADERS" \
+  -c "$COOKIE_JAR" \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"web@example.com","password":"Harness1!"}' \
+  "$BASE_URL/api/auth/login" >"$WEB_LOGIN_BODY"
+
+WEB_LOGIN_CSRF_TOKEN="$(python3 - <<'PY' "$WEB_LOGIN_BODY"
+import json, sys
+with open(sys.argv[1], 'r', encoding='utf-8') as handle:
+    print(json.load(handle)['csrfToken'])
+PY
+)"
+
+curl -fsS -b "$COOKIE_JAR" "$BASE_URL/api/me" >/dev/null
+curl -fsS -o /dev/null \
+  -b "$COOKIE_JAR" \
+  -H "X-CSRF-Token: $WEB_LOGIN_CSRF_TOKEN" \
+  -X POST \
+  "$BASE_URL/api/auth/logout"
+
+printf 'backend smoke: exercising mobile bearer register and session restore flow\n'
 MOBILE_REGISTER_BODY="$TMP_DIR/mobile-register.json"
 curl -fsS \
   -H 'Content-Type: application/json' \
@@ -115,6 +140,24 @@ if [ "$MOBILE_POST_LOGOUT_STATUS" != "401" ]; then
   printf 'ERROR: expected 401 after bearer logout, got %s\n' "$MOBILE_POST_LOGOUT_STATUS" >&2
   exit 1
 fi
+
+printf 'backend smoke: exercising mobile bearer login flow\n'
+MOBILE_LOGIN_BODY="$TMP_DIR/mobile-login.json"
+curl -fsS \
+  -H 'Content-Type: application/json' \
+  -H 'X-Client-Type: mobile' \
+  -d '{"email":"mobile@example.com","password":"Harness1!"}' \
+  "$BASE_URL/api/auth/login" >"$MOBILE_LOGIN_BODY"
+
+MOBILE_LOGIN_TOKEN="$(python3 - <<'PY' "$MOBILE_LOGIN_BODY"
+import json, sys
+with open(sys.argv[1], 'r', encoding='utf-8') as handle:
+    print(json.load(handle)['token'])
+PY
+)"
+
+curl -fsS -H "Authorization: Bearer $MOBILE_LOGIN_TOKEN" "$BASE_URL/api/me" >/dev/null
+curl -fsS -o /dev/null -H "Authorization: Bearer $MOBILE_LOGIN_TOKEN" -X POST "$BASE_URL/api/auth/logout"
 
 printf 'backend smoke: PASS\n'
 cp "$SERVER_LOG" "$ARTIFACT_DIR/backend-smoke.log"

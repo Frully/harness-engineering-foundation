@@ -1,26 +1,61 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-test('auth register, login, and logout work in the web shell', async ({ context, page }) => {
-  const email = `web-smoke-${Date.now()}@example.com`;
+test('auth smoke register enters the authenticated web shell', async ({ context, page }) => {
+  const email = smokeEmail('register');
 
-  await page.goto('/register');
-
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill('Harness1!');
-  await page.getByLabel('Confirm password').fill('Harness1!');
-  await page.getByRole('button', { name: /create account and issue cookie/i }).click();
+  await registerThroughUi(page, email);
 
   await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();
   expect((await context.cookies()).some((cookie) => cookie.name === 'hed_session')).toBeTruthy();
+});
 
-  await page.getByRole('button', { name: /logout and revoke current session/i }).click();
-  await expect(page.getByRole('heading', { name: /re-enter the operations room/i })).toBeVisible();
+test('auth smoke restore keeps the cookie session after reload', async ({ page }) => {
+  const email = smokeEmail('restore');
+
+  await registerThroughUi(page, email);
+  await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();
+  await page.reload();
+
+  await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();
+  await expect(page.getByText(email)).toBeVisible();
+});
+
+test('auth smoke login re-enters the authenticated web shell after logout', async ({ page }) => {
+  const email = smokeEmail('login');
+
+  await registerThroughUi(page, email);
+  await logoutThroughUi(page);
 
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password', { exact: true }).fill('Harness1!');
   await page.getByRole('button', { name: /sign in with cookie auth/i }).click();
 
   await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();
-  await page.getByRole('button', { name: /logout and revoke current session/i }).click();
+  await expect(page.getByText(email)).toBeVisible();
+});
+
+test('auth smoke logout returns the browser to the login shell', async ({ page }) => {
+  const email = smokeEmail('logout');
+
+  await registerThroughUi(page, email);
+  await logoutThroughUi(page);
+
   await expect(page.getByRole('heading', { name: /re-enter the operations room/i })).toBeVisible();
 });
+
+async function registerThroughUi(page: Page, email: string) {
+  await page.goto('/register');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password', { exact: true }).fill('Harness1!');
+  await page.getByLabel('Confirm password').fill('Harness1!');
+  await page.getByRole('button', { name: /create account and issue cookie/i }).click();
+}
+
+async function logoutThroughUi(page: Page) {
+  await page.getByRole('button', { name: /logout and revoke current session/i }).click();
+  await expect(page.getByRole('heading', { name: /re-enter the operations room/i })).toBeVisible();
+}
+
+function smokeEmail(scenario: string): string {
+  return `web-smoke-${scenario}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+}
