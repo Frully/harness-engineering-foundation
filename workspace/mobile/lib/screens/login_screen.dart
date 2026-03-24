@@ -26,6 +26,7 @@ class LoginScreen extends StatelessWidget {
         actionLabel: 'Login with bearer token',
         description:
             'Flutter persists a bearer token locally, then restores the shared session with GET /api/me on launch.',
+        mode: AuthFormMode.login,
         onSubmit: onSubmit,
       ),
     );

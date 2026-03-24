@@ -17,6 +17,12 @@ This document defines the minimum testing expectations for business code in the 
 - Once a feature becomes part of the repository baseline, its tests should be grouped by feature instead of being left in generic catch-all files such as `app.test`, `widget_test`, or equivalent all-purpose buckets.
 - Prefer feature-named test locations such as `auth/`, `billing/`, or `profile/` inside the runtime's normal test area.
 - Active baseline features and their required scenarios should be declared in a repository-local feature test policy so the harness can verify test presence without hardcoding a specific business feature into the check itself.
+- For baseline features, that policy should declare not only the primary success journeys but also the failure and validation paths that define the current product contract.
+- When a new feature becomes part of the repository's active baseline, update the feature test policy in the same change that introduces that baseline.
+- When an existing baseline feature gains a new public success path, failure path, validation rule, or other durable contract path, update the feature test policy in the same change.
+- When a baseline feature loses or narrows one of those durable paths, remove or tighten the corresponding policy entry in the same change.
+- Pure test refactors, file moves, or naming changes do not require a policy update unless the baseline scenarios themselves changed.
+- Keep ordinary test scenarios and smoke-specific scenarios in the feature policy separate so the harness can enforce broad feature coverage without forcing every edge case into `smoke.sh`.
 - Feature tests should cover the full set of public paths that define the feature's current baseline behavior, not only one happy-path slice of that feature.
 - When a feature exposes multiple meaningful user or request paths, the test suite should make those paths explicit instead of relying on one broad smoke test to imply the rest.
 - Backend business logic should be validated with unit, integration, or equivalent service-level checks.
@@ -43,6 +49,7 @@ This document defines the minimum testing expectations for business code in the 
 - Feature smoke coverage is incomplete if the current baseline feature only verifies a subset of its public journey.
 - Scenario completeness for an active feature should be judged against the repository's declared feature test policy rather than ad hoc reviewer memory.
 - Complete feature coverage means the repository should exercise success paths, expected failure paths, and important edge conditions across the combined test suite, even when not every one of those cases belongs in `smoke.sh`.
+- When a repository feature policy declares smoke-specific scenarios, those scenarios are part of the executable harness contract and should remain visible in the runtime's smoke implementation, not only in narrower test suites.
 
 ## Workspace testing contract
 

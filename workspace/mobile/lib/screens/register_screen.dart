@@ -26,6 +26,7 @@ class RegisterScreen extends StatelessWidget {
         actionLabel: 'Register and issue bearer token',
         description:
             'Registration creates the shared server-side session and returns a bearer token for Flutter to persist.',
+        mode: AuthFormMode.register,
         onSubmit: onSubmit,
       ),
     );

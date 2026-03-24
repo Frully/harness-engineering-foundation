@@ -31,7 +31,10 @@ func NewAuthService(store types.AuthStore, sessionTTL time.Duration) *AuthServic
 func (s *AuthService) Register(ctx context.Context, email string, password string, clientType types.ClientType) (types.User, *types.IssuedSession, error) {
 	cleanEmail := strings.TrimSpace(strings.ToLower(email))
 	if cleanEmail == "" || password == "" {
-		return types.User{}, nil, types.ErrInvalidCredentials
+		return types.User{}, nil, types.ErrInvalidRegistration
+	}
+	if err := types.ValidatePasswordComplexity(password); err != nil {
+		return types.User{}, nil, err
 	}
 
 	if _, err := s.store.GetUserByEmail(ctx, cleanEmail); err == nil {
@@ -63,6 +66,10 @@ func (s *AuthService) Register(ctx context.Context, email string, password strin
 
 func (s *AuthService) Login(ctx context.Context, email string, password string, clientType types.ClientType) (types.User, *types.IssuedSession, error) {
 	cleanEmail := strings.TrimSpace(strings.ToLower(email))
+	if cleanEmail == "" || password == "" {
+		return types.User{}, nil, types.ErrInvalidCredentials
+	}
+
 	record, err := s.store.GetUserByEmail(ctx, cleanEmail)
 	if err != nil {
 		if errors.Is(err, types.ErrNotFound) {

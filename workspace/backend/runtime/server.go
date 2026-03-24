@@ -72,6 +72,11 @@ func (s *Server) handleAuthMutation(w http.ResponseWriter, r *http.Request, regi
 	)
 
 	if register {
+		if validationErr := validateRegisterRequest(request); validationErr != nil {
+			status, message := statusForError(validationErr)
+			writeError(w, status, message)
+			return
+		}
 		user, session, err = s.auth.Register(r.Context(), request.Email, request.Password, clientType)
 	} else {
 		user, session, err = s.auth.Login(r.Context(), request.Email, request.Password, clientType)
@@ -228,10 +233,26 @@ func extractToken(r *http.Request, cookieName string) (string, types.ClientType)
 	return "", types.ClientTypeWeb
 }
 
+func validateRegisterRequest(request types.AuthRequest) error {
+	if strings.TrimSpace(request.Email) == "" || request.Password == "" || request.ConfirmPassword == "" {
+		return types.ErrInvalidRegistration
+	}
+	if request.Password != request.ConfirmPassword {
+		return types.ErrPasswordConfirmation
+	}
+	return nil
+}
+
 func statusForError(err error) (int, string) {
 	switch {
 	case errors.Is(err, types.ErrEmailExists):
 		return http.StatusConflict, "email already registered"
+	case errors.Is(err, types.ErrInvalidRegistration):
+		return http.StatusBadRequest, "email, password, and password confirmation are required"
+	case errors.Is(err, types.ErrPasswordConfirmation):
+		return http.StatusBadRequest, "password confirmation does not match"
+	case errors.Is(err, types.ErrWeakPassword):
+		return http.StatusBadRequest, types.PasswordPolicyMessage
 	case errors.Is(err, types.ErrInvalidCredentials):
 		return http.StatusUnauthorized, "invalid email or password"
 	default:

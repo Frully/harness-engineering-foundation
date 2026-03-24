@@ -9,7 +9,21 @@
           "scenario_patterns": {
             "register": "Test.*Register",
             "login": "Test.*Login",
-            "logout": "Test.*Logout"
+            "logout": "Test.*Logout",
+            "register_confirmation_mismatch": "Test.*(Mismatch|Mismatched|Confirmation)",
+            "register_weak_password": "Test.*Weak.*Password"
+          },
+          "smoke": {
+            "path_patterns": [
+              "workspace/backend/smoke.sh"
+            ],
+            "scenario_patterns": {
+              "web_register": "backend smoke: exercising web cookie register and session restore flow",
+              "web_login": "backend smoke: exercising web cookie login flow",
+              "web_csrf_failure": "expected 403 without csrf token",
+              "mobile_register": "backend smoke: exercising mobile bearer register and session restore flow",
+              "mobile_login": "backend smoke: exercising mobile bearer login flow"
+            }
           }
         },
         "frontend": {
@@ -22,7 +36,21 @@
           "scenario_patterns": {
             "register": "it\\(.*register|test\\(.*register",
             "login": "it\\(.*login|test\\(.*login",
-            "logout": "it\\(.*logout|test\\(.*logout"
+            "logout": "it\\(.*logout|test\\(.*logout",
+            "register_confirmation_mismatch": "it\\(.*(mismatch|confirm)|test\\(.*(mismatch|confirm)",
+            "register_weak_password": "it\\(.*weak password|test\\(.*weak password"
+          },
+          "smoke": {
+            "path_patterns": [
+              "workspace/frontend/tests/auth/**/*.spec.ts",
+              "workspace/frontend/tests/auth/**/*.spec.tsx"
+            ],
+            "scenario_patterns": {
+              "register": "test\\(.*register",
+              "session_restore": "test\\(.*restore",
+              "login": "test\\(.*login",
+              "logout": "test\\(.*logout"
+            }
           }
         },
         "mobile": {
@@ -33,7 +61,20 @@
           "scenario_patterns": {
             "register": "testWidgets\\(.*register|test\\(.*register",
             "login": "testWidgets\\(.*login|test\\(.*login",
-            "logout": "testWidgets\\(.*logout|test\\(.*logout"
+            "logout": "testWidgets\\(.*logout|test\\(.*logout",
+            "register_confirmation_mismatch": "testWidgets\\(.*(mismatch|confirm)|test\\(.*(mismatch|confirm)",
+            "register_weak_password": "testWidgets\\(.*weak passwords?|test\\(.*weak passwords?"
+          },
+          "smoke": {
+            "path_patterns": [
+              "workspace/mobile/integration_test/auth/**/*_test.dart"
+            ],
+            "scenario_patterns": {
+              "register": "testWidgets\\(.*register",
+              "session_restore": "testWidgets\\(.*restore",
+              "login": "testWidgets\\(.*login",
+              "logout": "testWidgets\\(.*logout"
+            }
           }
         }
       }

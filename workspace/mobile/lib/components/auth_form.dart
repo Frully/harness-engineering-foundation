@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../types/auth.dart';
 
+enum AuthFormMode { login, register }
+
 class AuthForm extends StatefulWidget {
   const AuthForm({
     super.key,
     required this.actionLabel,
     required this.description,
+    required this.mode,
     required this.onSubmit,
   });
 
   final String actionLabel;
   final String description;
+  final AuthFormMode mode;
   final Future<void> Function(Credentials credentials) onSubmit;
 
   @override
@@ -21,6 +25,7 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _submitting = false;
@@ -30,6 +35,7 @@ class _AuthFormState extends State<AuthForm> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -48,6 +54,9 @@ class _AuthFormState extends State<AuthForm> {
         Credentials(
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          confirmPassword: widget.mode == AuthFormMode.register
+              ? _confirmPasswordController.text
+              : null,
         ),
       );
     } catch (error) {
@@ -70,7 +79,10 @@ class _AuthFormState extends State<AuthForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.description, style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            widget.description,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 24),
           TextFormField(
             key: const Key('emailField'),
@@ -80,8 +92,9 @@ class _AuthFormState extends State<AuthForm> {
               labelText: 'Email',
               border: OutlineInputBorder(),
             ),
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Email is required.' : null,
+            validator: (value) => value == null || value.trim().isEmpty
+                ? 'Email is required.'
+                : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
@@ -92,9 +105,50 @@ class _AuthFormState extends State<AuthForm> {
               labelText: 'Password',
               border: OutlineInputBorder(),
             ),
-            validator: (value) =>
-                value == null || value.trim().isEmpty ? 'Password is required.' : null,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Password is required.';
+              }
+              if (widget.mode == AuthFormMode.register) {
+                final registrationError = validateRegisterCredentials(
+                  email: _emailController.text,
+                  password: value,
+                  confirmPassword: value,
+                );
+                if (registrationError == 'Passwords do not match.') {
+                  return null;
+                }
+                return registrationError;
+              }
+              return null;
+            },
           ),
+          if (widget.mode == AuthFormMode.register) ...[
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('confirmPasswordField'),
+              controller: _confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Confirm password',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Password confirmation is required.';
+                }
+                if (_passwordController.text != value) {
+                  return 'Passwords do not match.';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            Text(
+              passwordPolicyHint,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
           const SizedBox(height: 16),
           if (_error != null)
             Container(
@@ -109,7 +163,9 @@ class _AuthFormState extends State<AuthForm> {
           FilledButton(
             key: const Key('submitButton'),
             onPressed: _submitting ? null : _handleSubmit,
-            child: Text(_submitting ? 'Sending mobile signal...' : widget.actionLabel),
+            child: Text(
+              _submitting ? 'Sending mobile signal...' : widget.actionLabel,
+            ),
           ),
         ],
       ),

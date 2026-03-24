@@ -48,10 +48,15 @@ describe('auth feature', () => {
     );
 
     await userEvent.type(screen.getByLabelText('Email'), 'register@example.com');
-    await userEvent.type(screen.getByLabelText('Password'), 'hunter2');
+    await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
+    await userEvent.type(screen.getByLabelText('Confirm password'), 'Harness1!');
     await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
 
-    expect(authMocks.register).toHaveBeenCalled();
+    expect(authMocks.register).toHaveBeenCalledWith({
+      email: 'register@example.com',
+      password: 'Harness1!',
+      confirmPassword: 'Harness1!',
+    });
     expect(await screen.findByRole('heading', { name: /cookie session restored/i })).toBeVisible();
   });
 
@@ -77,11 +82,57 @@ describe('auth feature', () => {
     );
 
     await userEvent.type(screen.getByLabelText('Email'), 'login@example.com');
-    await userEvent.type(screen.getByLabelText('Password'), 'hunter2');
+    await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
     await userEvent.click(screen.getByRole('button', { name: /sign in with cookie auth/i }));
 
     expect(authMocks.login).toHaveBeenCalled();
     expect(await screen.findByRole('heading', { name: /cookie session restored/i })).toBeVisible();
+  });
+
+  it('auth register blocks mismatched password confirmation before submit', async () => {
+    authMocks.getCurrentUser.mockRejectedValue(new Error('no session'));
+
+    render(
+      <MemoryRouter initialEntries={['/register']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /create account and issue cookie/i })).toBeVisible(),
+    );
+
+    await userEvent.type(screen.getByLabelText('Email'), 'mismatch@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
+    await userEvent.type(screen.getByLabelText('Confirm password'), 'Harness2!');
+    await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
+
+    expect(authMocks.register).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alert')).toHaveTextContent(/passwords do not match/i);
+  });
+
+  it('auth register blocks weak passwords before submit', async () => {
+    authMocks.getCurrentUser.mockRejectedValue(new Error('no session'));
+
+    render(
+      <MemoryRouter initialEntries={['/register']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /create account and issue cookie/i })).toBeVisible(),
+    );
+
+    await userEvent.type(screen.getByLabelText('Email'), 'weak@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'weakpass');
+    await userEvent.type(screen.getByLabelText('Confirm password'), 'weakpass');
+    await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
+
+    expect(authMocks.register).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /password must be at least 8 characters and include uppercase, lowercase, number, and symbol/i,
+    );
   });
 
   it('auth logout returns to the login shell', async () => {

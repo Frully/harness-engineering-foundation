@@ -6,7 +6,8 @@ test('auth register, login, and logout work in the web shell', async ({ context,
   await page.goto('/register');
 
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill('hunter2');
+  await page.getByLabel('Password', { exact: true }).fill('Harness1!');
+  await page.getByLabel('Confirm password').fill('Harness1!');
   await page.getByRole('button', { name: /create account and issue cookie/i }).click();
 
   await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();
@@ -16,7 +17,7 @@ test('auth register, login, and logout work in the web shell', async ({ context,
   await expect(page.getByRole('heading', { name: /re-enter the operations room/i })).toBeVisible();
 
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill('hunter2');
+  await page.getByLabel('Password', { exact: true }).fill('Harness1!');
   await page.getByRole('button', { name: /sign in with cookie auth/i }).click();
 
   await expect(page.getByRole('heading', { name: /cookie session restored/i })).toBeVisible();

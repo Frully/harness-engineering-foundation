@@ -56,7 +56,7 @@ curl -fsS \
   -D "$WEB_REGISTER_HEADERS" \
   -c "$COOKIE_JAR" \
   -H 'Content-Type: application/json' \
-  -d '{"email":"web@example.com","password":"hunter2"}' \
+  -d '{"email":"web@example.com","password":"Harness1!","confirmPassword":"Harness1!"}' \
   "$BASE_URL/api/auth/register" >"$WEB_REGISTER_BODY"
 
 CSRF_TOKEN="$(python3 - <<'PY' "$WEB_REGISTER_BODY"
@@ -97,7 +97,7 @@ MOBILE_REGISTER_BODY="$TMP_DIR/mobile-register.json"
 curl -fsS \
   -H 'Content-Type: application/json' \
   -H 'X-Client-Type: mobile' \
-  -d '{"email":"mobile@example.com","password":"hunter2"}' \
+  -d '{"email":"mobile@example.com","password":"Harness1!","confirmPassword":"Harness1!"}' \
   "$BASE_URL/api/auth/register" >"$MOBILE_REGISTER_BODY"
 
 MOBILE_TOKEN="$(python3 - <<'PY' "$MOBILE_REGISTER_BODY"

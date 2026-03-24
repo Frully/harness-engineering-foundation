@@ -19,7 +19,7 @@ export function RegisterPage({
         </p>
       }
     >
-      <AuthForm actionLabel="Create account and issue cookie" onSubmit={onSubmit} />
+      <AuthForm actionLabel="Create account and issue cookie" mode="register" onSubmit={onSubmit} />
     </AuthCard>
   );
 }

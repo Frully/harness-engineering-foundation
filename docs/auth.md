@@ -88,6 +88,8 @@ Input:
 
 - `email`
 - `password`
+- `confirmPassword`
+- register passwords must be at least 8 characters and include uppercase, lowercase, number, and symbol
 - mobile clients should send `X-Client-Type: mobile`
 
 Response:
@@ -140,7 +142,10 @@ Response:
 Current user-facing auth errors include:
 
 - `email already registered`
+- `email, password, and password confirmation are required`
 - `invalid email or password`
+- `password confirmation does not match`
+- `password must be at least 8 characters and include uppercase, lowercase, number, and symbol`
 - `invalid csrf token`
 - `unauthorized`
 

@@ -17,23 +17,39 @@ errors = []
 
 for feature_name, feature_policy in policy["features"].items():
     for runtime_name, runtime_policy in feature_policy["runtimes"].items():
-        matches = []
-        for pattern in runtime_policy["path_patterns"]:
-            matches.extend(root.glob(pattern))
+        def validate_scope(scope_name, scope_policy, missing_label, scenario_label):
+            matches = []
+            for pattern in scope_policy["path_patterns"]:
+                matches.extend(root.glob(pattern))
 
-        files = sorted({match for match in matches if match.is_file()})
-        if not files:
-            errors.append(
-                f"{runtime_name} feature '{feature_name}' must have tests under one of: {', '.join(runtime_policy['path_patterns'])}"
-            )
-            continue
-
-        content = "\n".join(file.read_text(encoding="utf-8") for file in files)
-        for scenario_name, scenario_pattern in runtime_policy["scenario_patterns"].items():
-            if re.search(scenario_pattern, content, re.IGNORECASE | re.MULTILINE) is None:
+            files = sorted({match for match in matches if match.is_file()})
+            if not files:
                 errors.append(
-                    f"{runtime_name} feature '{feature_name}' must explicitly cover scenario '{scenario_name}'"
+                    f"{runtime_name} feature '{feature_name}' must have {missing_label} under one of: {', '.join(scope_policy['path_patterns'])}"
                 )
+                return
+
+            content = "\n".join(file.read_text(encoding="utf-8") for file in files)
+            for scenario_name, scenario_pattern in scope_policy["scenario_patterns"].items():
+                if re.search(scenario_pattern, content, re.IGNORECASE | re.MULTILINE) is None:
+                    errors.append(
+                        f"{runtime_name} feature '{feature_name}' must explicitly cover {scenario_label} '{scenario_name}'"
+                    )
+
+        validate_scope(
+            "tests",
+            runtime_policy,
+            "tests",
+            "scenario",
+        )
+
+        if "smoke" in runtime_policy:
+            validate_scope(
+                "smoke",
+                runtime_policy["smoke"],
+                "smoke coverage",
+                "smoke scenario",
+            )
 
 if errors:
     for message in errors:

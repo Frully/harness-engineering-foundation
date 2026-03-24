@@ -9,34 +9,51 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
 
-  testWidgets('auth register, login, and logout work against the real backend', (tester) async {
-    await tester.pumpWidget(HarnessMobileApp(authGateway: AuthService()));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'auth register, login, and logout work against the real backend',
+    (tester) async {
+      final email =
+          'mobile-smoke-${DateTime.now().millisecondsSinceEpoch}@example.com';
 
-    await tester.ensureVisible(find.byKey(const Key('switchModeButton')));
-    await tester.tap(find.byKey(const Key('switchModeButton')));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(HarnessMobileApp(authGateway: AuthService()));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.byKey(const Key('emailField')), 'mobile-smoke@example.com');
-    await tester.enterText(find.byKey(const Key('passwordField')), 'hunter2');
-    await tester.tap(find.byKey(const Key('submitButton')));
-    await waitForAuthCompletion(tester);
-    expect(find.text('Mobile session restored.'), findsOneWidget);
+      await tester.ensureVisible(find.byKey(const Key('switchModeButton')));
+      await tester.tap(find.byKey(const Key('switchModeButton')));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('logoutButton')));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    expect(find.text('Return to the mobile console.'), findsOneWidget);
+      await tester.enterText(find.byKey(const Key('emailField')), email);
+      await tester.enterText(
+        find.byKey(const Key('passwordField')),
+        'Harness1!',
+      );
+      await tester.enterText(
+        find.byKey(const Key('confirmPasswordField')),
+        'Harness1!',
+      );
+      await tester.ensureVisible(find.byKey(const Key('submitButton')));
+      await tester.tap(find.byKey(const Key('submitButton')));
+      await waitForAuthCompletion(tester);
+      expect(find.text('Mobile session restored.'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('emailField')), 'mobile-smoke@example.com');
-    await tester.enterText(find.byKey(const Key('passwordField')), 'hunter2');
-    await tester.tap(find.byKey(const Key('submitButton')));
-    await waitForAuthCompletion(tester);
-    expect(find.text('Mobile session restored.'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('logoutButton')));
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      expect(find.text('Return to the mobile console.'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('logoutButton')));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
-    expect(find.text('Return to the mobile console.'), findsOneWidget);
-  });
+      await tester.enterText(find.byKey(const Key('emailField')), email);
+      await tester.enterText(
+        find.byKey(const Key('passwordField')),
+        'Harness1!',
+      );
+      await tester.tap(find.byKey(const Key('submitButton')));
+      await waitForAuthCompletion(tester);
+      expect(find.text('Mobile session restored.'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('logoutButton')));
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      expect(find.text('Return to the mobile console.'), findsOneWidget);
+    },
+  );
 }
 
 Future<void> waitForAuthCompletion(WidgetTester tester) async {

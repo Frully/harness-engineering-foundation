@@ -3,7 +3,9 @@ package types
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
+	"unicode"
 )
 
 type ClientType string
@@ -32,8 +34,9 @@ type Session struct {
 }
 
 type AuthRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword,omitempty"`
 }
 
 type WebAuthResponse struct {
@@ -80,10 +83,47 @@ type IssuedSession struct {
 	ExpiresAt time.Time
 }
 
+const PasswordPolicyMessage = "password must be at least 8 characters and include uppercase, lowercase, number, and symbol"
+
 var (
-	ErrNotFound           = errors.New("not found")
-	ErrInvalidCredentials = errors.New("invalid email or password")
-	ErrEmailExists        = errors.New("email already registered")
-	ErrUnauthorized       = errors.New("unauthorized")
-	ErrForbidden          = errors.New("forbidden")
+	ErrNotFound             = errors.New("not found")
+	ErrInvalidCredentials   = errors.New("invalid email or password")
+	ErrInvalidRegistration  = errors.New("email, password, and password confirmation are required")
+	ErrPasswordConfirmation = errors.New("password confirmation does not match")
+	ErrWeakPassword         = errors.New(PasswordPolicyMessage)
+	ErrEmailExists          = errors.New("email already registered")
+	ErrUnauthorized         = errors.New("unauthorized")
+	ErrForbidden            = errors.New("forbidden")
 )
+
+func ValidatePasswordComplexity(password string) error {
+	if len(password) < 8 {
+		return ErrWeakPassword
+	}
+
+	var hasUpper bool
+	var hasLower bool
+	var hasDigit bool
+	var hasSymbol bool
+
+	for _, character := range password {
+		switch {
+		case unicode.IsUpper(character):
+			hasUpper = true
+		case unicode.IsLower(character):
+			hasLower = true
+		case unicode.IsDigit(character):
+			hasDigit = true
+		case strings.ContainsRune("!@#$%^&*()_+-=[]{}|;:,.<>?/~`", character):
+			hasSymbol = true
+		case unicode.IsPunct(character) || unicode.IsSymbol(character):
+			hasSymbol = true
+		}
+	}
+
+	if hasUpper && hasLower && hasDigit && hasSymbol {
+		return nil
+	}
+
+	return ErrWeakPassword
+}

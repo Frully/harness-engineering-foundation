@@ -15,7 +15,7 @@ export function LoginPage({ onSubmit }: { onSubmit: (credentials: Credentials) =
         </p>
       }
     >
-      <AuthForm actionLabel="Sign in with cookie auth" onSubmit={onSubmit} />
+      <AuthForm actionLabel="Sign in with cookie auth" mode="login" onSubmit={onSubmit} />
     </AuthCard>
   );
 }

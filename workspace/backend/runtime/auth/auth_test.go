@@ -20,8 +20,9 @@ func TestAuthRegisterSupportsWebAndMobileSessions(t *testing.T) {
 	defer server.Close()
 
 	webRegister := postJSON(t, server.URL+"/api/auth/register", map[string]string{
-		"email":    "web@example.com",
-		"password": "hunter2",
+		"email":           "web@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness1!",
 	}, nil)
 	if webRegister.StatusCode != http.StatusOK {
 		t.Fatalf("web register status = %d", webRegister.StatusCode)
@@ -31,8 +32,9 @@ func TestAuthRegisterSupportsWebAndMobileSessions(t *testing.T) {
 	}
 
 	mobileRegister := postJSON(t, server.URL+"/api/auth/register", map[string]string{
-		"email":    "mobile@example.com",
-		"password": "hunter2",
+		"email":           "mobile@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness1!",
 	}, map[string]string{"X-Client-Type": "mobile"})
 	if mobileRegister.StatusCode != http.StatusOK {
 		t.Fatalf("mobile register status = %d", mobileRegister.StatusCode)
@@ -52,8 +54,9 @@ func TestAuthLoginAcceptsValidCredentialsAndRejectsInvalidPassword(t *testing.T)
 	defer server.Close()
 
 	register := postJSON(t, server.URL+"/api/auth/register", map[string]string{
-		"email":    "repeat@example.com",
-		"password": "hunter2",
+		"email":           "repeat@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness1!",
 	}, nil)
 	if register.StatusCode != http.StatusOK {
 		t.Fatalf("register status = %d", register.StatusCode)
@@ -61,7 +64,7 @@ func TestAuthLoginAcceptsValidCredentialsAndRejectsInvalidPassword(t *testing.T)
 
 	login := postJSON(t, server.URL+"/api/auth/login", map[string]string{
 		"email":    "repeat@example.com",
-		"password": "hunter2",
+		"password": "Harness1!",
 	}, nil)
 	if login.StatusCode != http.StatusOK {
 		t.Fatalf("login status = %d", login.StatusCode)
@@ -81,8 +84,9 @@ func TestAuthLogoutRevokesCookieAndBearerSessions(t *testing.T) {
 	defer server.Close()
 
 	webRegister := postJSON(t, server.URL+"/api/auth/register", map[string]string{
-		"email":    "logout-web@example.com",
-		"password": "hunter2",
+		"email":           "logout-web@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness1!",
 	}, nil)
 	if webRegister.StatusCode != http.StatusOK {
 		t.Fatalf("web register status = %d", webRegister.StatusCode)
@@ -116,8 +120,9 @@ func TestAuthLogoutRevokesCookieAndBearerSessions(t *testing.T) {
 	}
 
 	mobileRegister := postJSON(t, server.URL+"/api/auth/register", map[string]string{
-		"email":    "logout-mobile@example.com",
-		"password": "hunter2",
+		"email":           "logout-mobile@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness1!",
 	}, map[string]string{"X-Client-Type": "mobile"})
 	if mobileRegister.StatusCode != http.StatusOK {
 		t.Fatalf("mobile register status = %d", mobileRegister.StatusCode)
@@ -136,6 +141,45 @@ func TestAuthLogoutRevokesCookieAndBearerSessions(t *testing.T) {
 	}
 	if mobileLogoutResponse.StatusCode != http.StatusNoContent {
 		t.Fatalf("mobile logout status = %d", mobileLogoutResponse.StatusCode)
+	}
+}
+
+func TestAuthRegisterRejectsMismatchedConfirmationAndWeakPassword(t *testing.T) {
+	server := newAuthTestServer(t)
+	defer server.Close()
+
+	mismatch := postJSON(t, server.URL+"/api/auth/register", map[string]string{
+		"email":           "mismatch@example.com",
+		"password":        "Harness1!",
+		"confirmPassword": "Harness2!",
+	}, nil)
+	if mismatch.StatusCode != http.StatusBadRequest {
+		t.Fatalf("mismatch status = %d", mismatch.StatusCode)
+	}
+
+	var mismatchBody struct {
+		Message string `json:"message"`
+	}
+	decodeBody(t, mismatch, &mismatchBody)
+	if mismatchBody.Message != "password confirmation does not match" {
+		t.Fatalf("mismatch message = %q", mismatchBody.Message)
+	}
+
+	weak := postJSON(t, server.URL+"/api/auth/register", map[string]string{
+		"email":           "weak@example.com",
+		"password":        "weakpass",
+		"confirmPassword": "weakpass",
+	}, nil)
+	if weak.StatusCode != http.StatusBadRequest {
+		t.Fatalf("weak status = %d", weak.StatusCode)
+	}
+
+	var weakBody struct {
+		Message string `json:"message"`
+	}
+	decodeBody(t, weak, &weakBody)
+	if weakBody.Message != "password must be at least 8 characters and include uppercase, lowercase, number, and symbol" {
+		t.Fatalf("weak message = %q", weakBody.Message)
 	}
 }
 
