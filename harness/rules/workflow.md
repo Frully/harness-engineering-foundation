@@ -27,6 +27,7 @@ Follow this order unless a task clearly requires a justified exception:
 - Do not treat a change as done if `bash harness/scripts/verify.sh` has not been run after the latest meaningful edit.
 - The minimum completion loop is: make the change, run the relevant local checks while iterating, then run `bash harness/scripts/verify.sh` before finishing, and fix any reported violations.
 - Pure documentation updates under `docs/` do not require `bash harness/scripts/verify.sh` by default.
+- Pure documentation updates to root-level `README*.md` files do not require `bash harness/scripts/verify.sh` by default.
 - Pure rule-document updates under `harness/rules/` do not require `bash harness/scripts/verify.sh` by default.
 - Changes to business code, tests, CI configuration, executable harness files, or runtime behavior still require the full `bash harness/scripts/verify.sh` gate before completion.
 - If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/verify.sh` must run it as part of the default loop.

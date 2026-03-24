@@ -28,7 +28,7 @@ When AI is the primary implementation engine, human memory and reviewer vigilanc
 | `docs/` | Durable project knowledge: system behavior, public contracts, design language. |
 | `deploy/` | Deployment assets and release infrastructure. |
 
-Changing `workspace/` changes the product. Changing `harness/` changes the constraints around the product. Changing `docs/` preserves knowledge that future AI runs must read and maintain. When a behavior, contract, or design decision becomes stable, it should be extracted from chat history or code comments into `docs/` so the knowledge outlives the conversation.
+Changing `workspace/` changes the product. Changing `harness/` changes the constraints around the product. Changing `docs/` preserves knowledge that future AI runs must read and maintain.
 
 ## What is enforced
 
