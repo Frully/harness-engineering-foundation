@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'interface_theme.dart';
+
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     super.key,
     required this.title,
     required this.eyebrow,
+    required this.summary,
     required this.footerLabel,
     required this.footerAction,
     required this.onSwitch,
@@ -13,6 +16,7 @@ class AuthScaffold extends StatelessWidget {
 
   final String title;
   final String eyebrow;
+  final String summary;
   final String footerLabel;
   final String footerAction;
   final VoidCallback onSwitch;
@@ -21,61 +25,133 @@ class AuthScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF6EEDD), Color(0xFFE8DDD0)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: Card(
-                  color: const Color(0xFFFFFAF2),
-                  elevation: 8,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+      body: CommandShell(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final useSplit = constraints.maxWidth >= 760;
+
+            final heroPanel = CommandPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const CommandStrip(
+                    items: ['MOBILE NODE', 'BEARER AUTH', 'HANDHELD CONTROL'],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          eyebrow,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                letterSpacing: 2.4,
-                                color: const Color(0xFF70594E),
-                              ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.displayMedium,
-                        ),
-                        const SizedBox(height: 24),
-                        child,
-                        const SizedBox(height: 20),
-                        TextButton(
-                          key: const Key('switchModeButton'),
-                          onPressed: onSwitch,
-                          child: Text('$footerLabel $footerAction'),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 18),
+                  Text(eyebrow, style: Theme.of(context).textTheme.labelMedium),
+                  const SizedBox(height: 12),
+                  Text(title, style: Theme.of(context).textTheme.displayMedium),
+                  const SizedBox(height: 14),
+                  Text(summary, style: Theme.of(context).textTheme.bodyLarge),
+                  const SizedBox(height: 18),
+                  const SignalRail(
+                    items: [
+                      'Shared sessions',
+                      'Bearer restore',
+                      'Mobile smoke visible',
+                    ],
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  const _CompactTelemetryRail(),
+                ],
               ),
+            );
+
+            final formPanel = CommandPanel(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const CommandStrip(
+                    items: ['AUTH FLOW', 'OPERATOR ENTRY', 'TOKEN ISSUE'],
+                  ),
+                  const SizedBox(height: 18),
+                  child,
+                  const SizedBox(height: 18),
+                  TextButton(
+                    key: const Key('switchModeButton'),
+                    onPressed: onSwitch,
+                    child: Text('$footerLabel $footerAction'),
+                  ),
+                ],
+              ),
+            );
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 980),
+                child: useSplit
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 11, child: heroPanel),
+                          const SizedBox(width: 14),
+                          Expanded(flex: 9, child: formPanel),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          heroPanel,
+                          const SizedBox(height: 14),
+                          formPanel,
+                        ],
+                      ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _CompactTelemetryRail extends StatelessWidget {
+  const _CompactTelemetryRail();
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: const [
+        _TelemetryChip(label: 'Transport', value: 'Bearer'),
+        _TelemetryChip(label: 'State', value: 'Shared session'),
+        _TelemetryChip(label: 'Role', value: 'Web-aligned'),
+      ],
+    );
+  }
+}
+
+class _TelemetryChip extends StatelessWidget {
+  const _TelemetryChip({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 148),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(255, 255, 255, 0.6),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: InterfacePalette.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: InterfacePalette.ink,
+              fontWeight: FontWeight.w700,
             ),
           ),
-        ),
+        ],
       ),
     );
   }

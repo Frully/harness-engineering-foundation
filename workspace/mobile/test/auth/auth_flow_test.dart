@@ -18,6 +18,7 @@ void main() {
       'login@example.com',
     );
     await tester.enterText(find.byKey(const Key('passwordField')), 'Harness1!');
+    await tester.ensureVisible(find.byKey(const Key('submitButton')));
     await tester.tap(find.byKey(const Key('submitButton')));
     await tester.pumpAndSettle();
 
@@ -33,6 +34,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('switchModeButton')));
       await tester.tap(find.byKey(const Key('switchModeButton')));
       await tester.pumpAndSettle();
       await tester.enterText(
@@ -70,6 +72,7 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('logoutButton')));
     await tester.tap(find.byKey(const Key('logoutButton')));
     await tester.pumpAndSettle();
 
@@ -84,6 +87,7 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('switchModeButton')));
     await tester.tap(find.byKey(const Key('switchModeButton')));
     await tester.pumpAndSettle();
     await tester.enterText(
@@ -109,6 +113,7 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('switchModeButton')));
     await tester.tap(find.byKey(const Key('switchModeButton')));
     await tester.pumpAndSettle();
     await tester.enterText(

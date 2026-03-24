@@ -95,7 +95,10 @@ The design language is shared across web and mobile, but each runtime should exp
 ### Consistency rule
 
 - Web and mobile should share identity, not literal layout parity.
-- If a value or pattern must diverge by runtime, keep the role the same even if the exact measurement changes.
+- The web runtime is the canonical visual reference for the product language.
+- Mobile should translate the web reference into handheld interaction, not reinterpret it into a second near-match style.
+- If a value or pattern must diverge by runtime, keep the role, hierarchy, and material intent the same even if the exact measurement changes.
+- Avoid "close but different" drift such as matching palette but changing surface grammar, matching copy tone but changing hierarchy, or matching token names but inventing a different component language.
 
 ## Visual System
 
@@ -422,9 +425,12 @@ These define the current expected component-level roles. New components should m
 - Shared tokens should exist as concrete implementation tokens in each runtime.
 - Web should expose them through CSS custom properties or an equivalent central theme layer.
 - Mobile should expose them through theme constants, theme extensions, or an equivalent central token layer.
+- If one runtime already expresses the shared language more clearly, treat that runtime as the reference implementation and translate from it rather than redesigning from scratch.
+- Web is the current reference implementation for shell composition, panel grammar, command strips, type hierarchy, and accent distribution.
 - New components should use the shared token roles before introducing new raw values.
 - Repeated magic numbers should be promoted into shared tokens once they appear in more than one component or screen.
 - Runtime-specific adaptations are allowed, but they should be documented as runtime mappings of the same shared role rather than ad hoc local styling.
+- Repeated visual structures should be promoted into reusable runtime theme or design-system primitives instead of being recopied screen by screen.
 - When a new visual pattern becomes durable, add or update the corresponding token definition here instead of leaving it implicit in code.
 
 ## Change Protocol

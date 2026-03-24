@@ -74,9 +74,12 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 ## Mobile design constraints
 
 - Mobile must preserve shared identity with the web runtime while translating it through handheld density and stacked composition.
+- Mobile should treat the current web runtime as the canonical visual reference and converge toward its hierarchy, surface grammar, command language, and token usage.
 - Mobile styling must use shared design tokens for color, type, spacing, radius, border, shadow, and motion instead of scattering repeated raw values across unrelated screens and components.
 - Mobile should preserve the editorial material language: warm paper surfaces, deep ink text, oversized hierarchy, amber-led emphasis, visible borders, restrained but forceful motion, and selective TUI-inspired control grammar.
 - Mobile should preserve narrative-first hierarchy instead of collapsing into default platform-auth or dashboard styling.
+- Mobile should not invent a second near-match visual language. If web and mobile feel merely similar but not clearly of one system, mobile is too far from the reference.
+- Repeated mobile visual primitives should be promoted into shared runtime styling such as theme constants, theme extensions, or reusable structural components instead of being recopied screen by screen.
 - If a mobile change introduces a repeated new visual value, a durable component role, or a material shift in tone, update `docs/product-interface-design.md` in the same task.
 
 ## Mobile design prohibitions

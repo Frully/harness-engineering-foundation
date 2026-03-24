@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'components/interface_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
@@ -81,21 +82,7 @@ class _HarnessMobileAppState extends State<HarnessMobileApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Harness Mobile Console',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFAD5B2C),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF4EBDD),
-        textTheme: ThemeData.light().textTheme.copyWith(
-          displayMedium: const TextStyle(
-            fontSize: 38,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF221A16),
-            height: 1.05,
-          ),
-        ),
-      ),
+      theme: buildHarnessTheme(),
       home: switch (_sessionView) {
         SessionLoading() => const LoadingScreen(),
         SessionAnonymous() => AuthFlow(
@@ -116,14 +103,63 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      body: CommandShell(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Restoring mobile bearer session...'),
+            const CommandPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommandStrip(
+                    items: ['BOOT', 'BEARER PROBE', 'SESSION RESTORE'],
+                  ),
+                  SizedBox(height: 18),
+                  Text(
+                    'Restoring mobile bearer session...',
+                    style: TextStyle(
+                      fontSize: 40,
+                      height: 0.94,
+                      fontWeight: FontWeight.w700,
+                      color: InterfacePalette.ink,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'The handheld shell is checking the persisted token and re-entering the shared server session ledger.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      height: 1.6,
+                      color: InterfacePalette.inkSoft,
+                    ),
+                  ),
+                  SizedBox(height: 22),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            const CommandPanel(
+              commandSurface: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommandStrip(
+                    inverse: true,
+                    items: ['MOBILE NODE', 'COMMAND READY'],
+                  ),
+                  SizedBox(height: 18),
+                  LinearProgressIndicator(
+                    minHeight: 10,
+                    backgroundColor: Color.fromRGBO(247, 238, 221, 0.08),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      InterfacePalette.accentLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -19,6 +19,8 @@ class LoginScreen extends StatelessWidget {
     return AuthScaffold(
       title: 'Return to the mobile console.',
       eyebrow: 'Mobile bearer flow',
+      summary:
+          'The handheld shell mirrors the same command-chamber language as the web reference while restoring access through a persisted bearer token.',
       footerLabel: 'Need an account?',
       footerAction: 'Create one now',
       onSwitch: onSwitch,

@@ -101,13 +101,21 @@ export function App() {
 
   if (session.status === 'loading') {
     return (
-      <main className="app-shell">
-        <section className="status-panel" aria-label="Loading">
+      <main className="command-shell loading-shell">
+        <section className="panel panel-loading" aria-label="Loading">
+          <div className="command-strip">
+            <span>BOOT</span>
+            <span>SESSION PROBE</span>
+            <span>COOKIE CHECK</span>
+          </div>
           <p className="eyebrow">Booting session</p>
           <h1>Rehydrating the editorial shell.</h1>
           <p className="muted">
             Checking the secure cookie and restoring your live view.
           </p>
+          <div className="loading-meter" aria-hidden="true">
+            <span />
+          </div>
         </section>
       </main>
     );

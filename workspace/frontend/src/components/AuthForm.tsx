@@ -59,8 +59,19 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
+      <div className="form-strip">
+        <span>{mode === 'register' ? 'SESSION MINT' : 'SESSION RESUME'}</span>
+        <span>COOKIE / CSRF</span>
+        <span>
+          {mode === 'register' ? 'ACCOUNT PROVISION' : 'OPERATOR RETURN'}
+        </span>
+      </div>
+
       <label className="field">
-        <span>Email</span>
+        <span className="field-meta">
+          <span>Email</span>
+          <code>IDENTITY</code>
+        </span>
         <input
           aria-label="Email"
           autoComplete="email"
@@ -72,7 +83,10 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       </label>
 
       <label className="field">
-        <span>Password</span>
+        <span className="field-meta">
+          <span>Password</span>
+          <code>SECRET</code>
+        </span>
         <input
           aria-label="Password"
           autoComplete="current-password"
@@ -86,7 +100,10 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       {mode === 'register' ? (
         <>
           <label className="field">
-            <span>Confirm password</span>
+            <span className="field-meta">
+              <span>Confirm password</span>
+              <code>PARITY</code>
+            </span>
             <input
               aria-label="Confirm password"
               autoComplete="new-password"
@@ -97,7 +114,10 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
             />
           </label>
 
-          <p className="muted">{passwordPolicyHint}</p>
+          <div className="command-note command-note-soft">
+            <span className="label">Password policy</span>
+            <p className="muted small">{passwordPolicyHint}</p>
+          </div>
         </>
       ) : null}
 
@@ -110,6 +130,14 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       <button className="primary-button" disabled={isSubmitting} type="submit">
         {isSubmitting ? 'Transmitting signal...' : actionLabel}
       </button>
+
+      <div className="command-note command-note-soft">
+        <span className="label">Transport discipline</span>
+        <p className="muted small">
+          The browser relies on the secure cookie for session transport and the
+          readable CSRF token for protected writes.
+        </p>
+      </div>
     </form>
   );
 }

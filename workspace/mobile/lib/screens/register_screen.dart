@@ -19,6 +19,8 @@ class RegisterScreen extends StatelessWidget {
     return AuthScaffold(
       title: 'Provision a mobile operator.',
       eyebrow: 'Session mint',
+      summary:
+          'Registration opens the shared server-side session and hands the handheld runtime a bearer token to preserve the same operator identity.',
       footerLabel: 'Already provisioned?',
       footerAction: 'Go back to login',
       onSwitch: onSwitch,

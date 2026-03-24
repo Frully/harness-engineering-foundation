@@ -75,9 +75,11 @@ Do not add these layers preemptively. Add them only when they reduce repeated co
 ## Frontend design constraints
 
 - Frontend must preserve shared identity with the mobile runtime while translating it through web-native layout and interaction patterns.
+- Frontend is the current canonical visual reference for the shared product language unless an intentional full redesign says otherwise.
 - Frontend styling must use shared design tokens for color, type, spacing, radius, border, shadow, and motion instead of scattering repeated raw values across unrelated components.
 - Frontend should preserve the editorial material language: warm paper surfaces, deep ink text, oversized hierarchy, amber-led emphasis, visible borders, restrained but forceful motion, and selective TUI-inspired control grammar.
 - Frontend should favor dominant editorial composition over generic centered auth cards or interchangeable dashboard blocks.
+- Repeated frontend visual primitives should be promoted into shared runtime styling such as CSS custom properties, theme layers, or reusable structural components instead of being recopied per page.
 - If a frontend change introduces a repeated new visual value, a durable component role, or a material shift in tone, update `docs/product-interface-design.md` in the same task.
 
 ## Frontend design prohibitions

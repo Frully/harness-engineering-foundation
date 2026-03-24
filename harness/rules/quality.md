@@ -20,6 +20,7 @@ This document defines the repository quality gate and completion boundary.
 - If architecture violations happen repeatedly, update the checks or rules in `harness/`.
 - Once a workspace enters real feature development, treat real `check.sh` and `test.sh` coverage as part of the repository baseline for that workspace, not as an optional follow-up.
 - During development, use the smallest relevant local check or test to iterate quickly, then run the full `dev.sh` gate before finishing.
+- UI changes should include screenshot-based review of the affected screens or pages so visual drift, broken hierarchy, clipped states, and obvious interaction issues are caught before completion.
 
 ## Definition of done
 
@@ -31,6 +32,7 @@ This document defines the repository quality gate and completion boundary.
 - Each workspace `check.sh` that validates real business code includes formatting verification appropriate to that runtime, such as `gofmt`, `biome format --check`, or `dart format --set-exit-if-changed`.
 - If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.
 - If a workspace contains real business code, its `smoke.sh` must represent complete smoke coverage for that workspace's current operational baseline.
+- If the task materially changes web or mobile UI, screenshots from the affected runtime have been reviewed and any obvious design or interaction issues found from those captures have been addressed.
 - If the task changed durable project knowledge such as auth behavior, API contracts, testing strategy, run paths, or release flow, the relevant `docs/` content has been updated in the same task.
 - If a repeated mistake is detected, prefer improving `harness/` so the mistake is easier to prevent next time.
 
@@ -65,6 +67,7 @@ This document defines the repository quality gate and completion boundary.
 - Whether a new shared boundary has been justified well enough to exist.
 - Whether a rule document placed in `docs/` should be promoted into `harness/`.
 - Whether each workspace's smoke suite is complete for the current operational baseline and uses enough production realism.
+- Whether screenshot review for UI changes was thorough enough to catch visible design drift or interaction regressions.
 
 ### Natural next candidates for stronger enforcement
 
