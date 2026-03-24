@@ -58,6 +58,7 @@ Follow the default development order in `harness/rules/workflow.md` unless a tas
 - Backend-specific architecture: `harness/rules/backend-architecture.md`
 - Frontend-specific architecture: `harness/rules/frontend-architecture.md`
 - Mobile-specific architecture: `harness/rules/mobile-architecture.md`
+- Documentation ownership and update expectations: `harness/rules/documentation.md`
 - Shared-code policy and drift prevention: `harness/rules/sharing.md`
 - Default development order and working method: `harness/rules/workflow.md`
 - Quality loop, checks, CI boundary, and current rule coverage: `harness/rules/quality.md`

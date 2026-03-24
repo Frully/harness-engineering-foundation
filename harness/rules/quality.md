@@ -4,7 +4,7 @@ This document defines the repository quality gate and completion boundary.
 
 ## Quality gate
 
-- After every code change, run `bash harness/scripts/dev.sh` before considering the task complete.
+- `bash harness/scripts/dev.sh` is the final repository quality gate for task completion, not the required command after every tiny intermediate edit.
 - Treat `bash harness/scripts/dev.sh` as the shared baseline verification entrypoint, not as a smoke test by itself. Its coverage is only as strong as the checks and workspace hooks it runs.
 - If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
@@ -15,6 +15,7 @@ This document defines the repository quality gate and completion boundary.
 - If CI fails on the same entrypoint, the change is not complete even if the local edit appears correct.
 - If architecture violations happen repeatedly, update the checks or rules in `harness/`.
 - Once a workspace enters real feature development, treat real `check.sh` and `test.sh` coverage as part of the repository baseline for that workspace, not as an optional follow-up.
+- During development, use the smallest relevant local check or test to iterate quickly, then run the full `dev.sh` gate before finishing.
 
 ## Definition of done
 
@@ -25,6 +26,7 @@ This document defines the repository quality gate and completion boundary.
 - Any available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks pass.
 - If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.
 - If a workspace contains real business code, its `smoke.sh` must represent complete smoke coverage for that workspace's current operational baseline.
+- If the task changed durable project knowledge such as auth behavior, API contracts, testing strategy, run paths, or release flow, the relevant `docs/` content has been updated in the same task.
 - If a repeated mistake is detected, prefer improving `harness/` so the mistake is easier to prevent next time.
 
 ## Rule coverage

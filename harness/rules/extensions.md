@@ -6,6 +6,9 @@ This document defines how `harness/` should grow over time.
 
 `harness/` is expected to evolve. Add new harness files when they reduce repeated mistakes, make AI behavior more consistent, or make review and validation easier.
 The current rule set is intentionally minimal, not exhaustive. Add new topic-specific rule files only when a recurring problem justifies them.
+Treat `harness/` as a maintained control layer, not as a one-time scaffold.
+When repeated mistakes, repeated review comments, or repeated manual cleanup appear, prefer improving `harness/` instead of only patching the same class of issue in business code.
+Harness changes should make future work easier, clearer, and safer. They should not be added as decoration or speculative framework code.
 
 ## Constraint categories
 
@@ -55,6 +58,7 @@ The current rule set is intentionally minimal, not exhaustive. Add new topic-spe
   - suggested location: `harness/rules/copywriting.md`
 
 Other rule files may also be added when needed, such as testing guidance, API/interface guidance, configuration guidance, dependency policy, security guidance, or observability guidance. Add them only when the problem is recurring, cross-cutting, and worth maintaining as a durable rule.
+Documentation guidance is also a valid rule area when contributors repeatedly ship behavior or contract changes without updating durable project docs.
 
 These documents are soft constraints by default. Promote them into hard checks only when repeated mistakes justify automation and the check can remain simple.
 
@@ -86,6 +90,29 @@ Add one of these only when it solves a repeated problem that the current rules n
 - Workspace-specific `check.sh` and `test.sh` hooks inside each workspace
 - CI configuration outside `harness/`, but always calling `bash harness/scripts/dev.sh`
 
+## When harness should be updated
+
+- Update `harness/` when the same architecture mistake appears more than once.
+- Update `harness/` when the same testing gap, smoke gap, or CI gap appears more than once.
+- Update `harness/` when repository structure, runtime boundaries, or completion expectations have materially changed.
+- Update `harness/` when a rule is being enforced manually in repeated reviews and can be stated more clearly in a rule file.
+- Update `harness/` when a soft rule has become stable enough that future AI runs should reliably discover it.
+
+## Preferred maintenance order
+
+- First decide whether the problem is guidance, enforcement, or both.
+- Put durable normative guidance in `harness/rules/`.
+- Put executable enforcement in `harness/checks/` only when the rule is objective enough to verify cheaply and with acceptable false positives.
+- Wire default enforcement through `harness/scripts/dev.sh` instead of inventing an extra entrypoint.
+- Keep CI calling the same shared entrypoint unless a platform-specific job genuinely requires an additional runtime wrapper.
+
+## Anti-overfitting rules
+
+- Do not hardcode a single business feature into harness logic when the same behavior can be expressed as a repository policy or manifest-driven rule.
+- Prefer generic checks plus repository-local policy data over feature-specific shell scripts or regex checks.
+- Do not encode temporary implementation details into harness unless they represent a durable repository boundary.
+- Do not expand harness with broad abstractions before a repeated problem justifies them.
+
 ## How to choose the right constraint type
 
 - Add a soft constraint first when the issue is subjective, stylistic, semantic, or still changing.
@@ -108,6 +135,7 @@ Add one of these only when it solves a repeated problem that the current rules n
 ## Rules for adding harness constraints
 
 - Prefer modifying an existing rule file before creating a new one when the topic already has a clear home.
+- Do not add a new rule file when an existing rule file can be extended without making the structure meaningfully less clear.
 - Prefer one small check over a large framework.
 - Every hard constraint must produce clear failure output and a non-zero exit code on failure.
 - Every new hard constraint should explain what it protects and where the fix should happen.
@@ -115,3 +143,6 @@ Add one of these only when it solves a repeated problem that the current rules n
 - Do not put business-specific implementation details into harness unless they are genuinely cross-cutting constraints.
 - Do not duplicate the same rule in multiple files unless one file is only a short discovery entrypoint.
 - Do not introduce new structural layers just because they are common in other projects. Add a new layer only when a repeated problem clearly justifies it.
+- Remove stale or superseded harness guidance when the repository has moved past it.
+- Avoid leaving contradictory or outdated “future candidate” text after the corresponding rule or check already exists.
+- Prefer a small amount of intentional summary duplication across `AGENTS.md`, topic rules, workflow, and quality docs, but keep one detailed source of truth for each topic.
