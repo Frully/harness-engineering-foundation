@@ -50,7 +50,7 @@ jobs:
           pnpm exec playwright install --with-deps chromium
 
       - name: Run harness quality gate
-        run: bash harness/scripts/dev.sh
+        run: bash harness/scripts/verify.sh
 
       - name: Upload smoke artifacts
         if: always()
