@@ -71,3 +71,21 @@ No control layer is perfect from the start. The value of the harness is not in c
 ## Current demo baseline
 
 The current runnable baseline is a small auth flow covering registration, login, logout, and session restore. It exists to give the harness a real cross-runtime workflow to exercise.
+
+## Try it yourself
+
+The best way to understand the harness is to let AI work inside it and watch how the control layer shapes the result. Clone the project, open it in your preferred AI coding tool, and give it one of the prompts below. Watch how soft constraints guide its choices and hard constraints catch its mistakes.
+
+### Add a feature
+
+The current baseline only has auth. Try extending it:
+
+> Add a "delete my account" feature. The backend should revoke all sessions and permanently remove the user. Web and mobile both need a confirmation dialog that makes the action feel irreversible.
+
+The harness will enforce code placement, layer dependencies, test coverage, and UI copy standards throughout the process. If AI puts handler logic in the wrong layer or skips tests, `verify.sh` will reject it.
+
+### Improve a constraint
+
+The harness currently has no git commit constraints. AI can commit with any message format and nothing will reject it. Try closing this gap:
+
+> The project has no commit message standards. Add a harness constraint that requires commit messages to follow the conventional commits format, enforced through a git hook. Commits that do not match should be rejected.
