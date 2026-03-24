@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harness_mobile/main.dart';
 import 'package:harness_mobile/services/auth_service.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -11,10 +10,10 @@ void main() {
   testWidgets('auth smoke register enters the authenticated mobile shell', (
     tester,
   ) async {
-    SharedPreferences.setMockInitialValues({});
     final email = smokeEmail('register');
+    final tokenStore = InMemoryTokenStore();
 
-    await pumpMobileApp(tester);
+    await pumpMobileApp(tester, tokenStore);
     await registerThroughUi(tester, email);
 
     await expectAuthenticatedShell(tester, email);
@@ -23,27 +22,27 @@ void main() {
   testWidgets('auth smoke restore keeps the bearer session after app restart', (
     tester,
   ) async {
-    SharedPreferences.setMockInitialValues({});
     final email = smokeEmail('restore');
+    final tokenStore = InMemoryTokenStore();
 
-    await pumpMobileApp(tester);
+    await pumpMobileApp(tester, tokenStore);
     await registerThroughUi(tester, email);
     await expectAuthenticatedShell(tester, email);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
 
-    await pumpMobileApp(tester);
+    await pumpMobileApp(tester, tokenStore);
     await expectAuthenticatedShell(tester, email);
   });
 
   testWidgets(
     'auth smoke login re-enters the authenticated mobile shell after logout',
     (tester) async {
-      SharedPreferences.setMockInitialValues({});
       final email = smokeEmail('login');
+      final tokenStore = InMemoryTokenStore();
 
-      await pumpMobileApp(tester);
+      await pumpMobileApp(tester, tokenStore);
       await registerThroughUi(tester, email);
       await logoutThroughUi(tester);
 
@@ -55,10 +54,10 @@ void main() {
   testWidgets(
     'auth smoke logout returns the mobile app to the anonymous shell',
     (tester) async {
-      SharedPreferences.setMockInitialValues({});
       final email = smokeEmail('logout');
+      final tokenStore = InMemoryTokenStore();
 
-      await pumpMobileApp(tester);
+      await pumpMobileApp(tester, tokenStore);
       await registerThroughUi(tester, email);
       await logoutThroughUi(tester);
 
@@ -67,8 +66,10 @@ void main() {
   );
 }
 
-Future<void> pumpMobileApp(WidgetTester tester) async {
-  await tester.pumpWidget(HarnessMobileApp(authGateway: AuthService()));
+Future<void> pumpMobileApp(WidgetTester tester, TokenStore tokenStore) async {
+  await tester.pumpWidget(
+    HarnessMobileApp(authGateway: AuthService(tokenStore: tokenStore)),
+  );
   await tester.pumpAndSettle();
 }
 

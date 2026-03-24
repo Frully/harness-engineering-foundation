@@ -10,6 +10,7 @@ This document defines the repository quality gate and completion boundary.
 - Pure rule-document updates under `harness/rules/` do not require the full `dev.sh` gate by default.
 - Changes to executable harness files, CI behavior, business code, tests, or runtime behavior still require the full `dev.sh` gate.
 - If a workspace has its own `check.sh`, `test.sh`, or `smoke.sh`, `harness/scripts/dev.sh` must run it as part of the default loop.
+- Workspace `check.sh` hooks should include formatting verification that matches the runtime toolchain instead of relying on manual editor formatting.
 - Do not skip a failing check or test by removing it unless the harness itself is being intentionally redesigned and the change is explained.
 - Placeholder workspace hooks are allowed only while the workspace has no real business code yet.
 - Once a workspace starts carrying real business code, placeholder hooks are no longer acceptable and the quality gate should fail until real checks and tests replace them.
@@ -27,6 +28,7 @@ This document defines the repository quality gate and completion boundary.
 - If the task changed business code, tests, CI behavior, executable harness files, or runtime behavior, `bash harness/scripts/dev.sh` has been run after the latest meaningful edit.
 - When `bash harness/scripts/dev.sh` is required for the task type, it exits successfully.
 - Any available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks pass.
+- Each workspace `check.sh` that validates real business code includes formatting verification appropriate to that runtime, such as `gofmt`, `biome format --check`, or `dart format --set-exit-if-changed`.
 - If a workspace contains real business code, its `check.sh`, `test.sh`, and `smoke.sh` must not remain placeholder-only hooks.
 - If a workspace contains real business code, its `smoke.sh` must represent complete smoke coverage for that workspace's current operational baseline.
 - If the task changed durable project knowledge such as auth behavior, API contracts, testing strategy, run paths, or release flow, the relevant `docs/` content has been updated in the same task.

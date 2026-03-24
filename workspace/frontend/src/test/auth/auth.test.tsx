@@ -44,20 +44,34 @@ describe('auth feature', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /create account and issue cookie/i })).toBeVisible(),
+      expect(
+        screen.getByRole('button', {
+          name: /create account and issue cookie/i,
+        }),
+      ).toBeVisible(),
     );
 
-    await userEvent.type(screen.getByLabelText('Email'), 'register@example.com');
+    await userEvent.type(
+      screen.getByLabelText('Email'),
+      'register@example.com',
+    );
     await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
-    await userEvent.type(screen.getByLabelText('Confirm password'), 'Harness1!');
-    await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
+    await userEvent.type(
+      screen.getByLabelText('Confirm password'),
+      'Harness1!',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /create account and issue cookie/i }),
+    );
 
     expect(authMocks.register).toHaveBeenCalledWith({
       email: 'register@example.com',
       password: 'Harness1!',
       confirmPassword: 'Harness1!',
     });
-    expect(await screen.findByRole('heading', { name: /cookie session restored/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: /cookie session restored/i }),
+    ).toBeVisible();
   });
 
   it('auth login transitions into the dashboard', async () => {
@@ -78,15 +92,21 @@ describe('auth feature', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /sign in with cookie auth/i })).toBeVisible(),
+      expect(
+        screen.getByRole('button', { name: /sign in with cookie auth/i }),
+      ).toBeVisible(),
     );
 
     await userEvent.type(screen.getByLabelText('Email'), 'login@example.com');
     await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
-    await userEvent.click(screen.getByRole('button', { name: /sign in with cookie auth/i }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /sign in with cookie auth/i }),
+    );
 
     expect(authMocks.login).toHaveBeenCalled();
-    expect(await screen.findByRole('heading', { name: /cookie session restored/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: /cookie session restored/i }),
+    ).toBeVisible();
   });
 
   it('auth register blocks mismatched password confirmation before submit', async () => {
@@ -99,16 +119,30 @@ describe('auth feature', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /create account and issue cookie/i })).toBeVisible(),
+      expect(
+        screen.getByRole('button', {
+          name: /create account and issue cookie/i,
+        }),
+      ).toBeVisible(),
     );
 
-    await userEvent.type(screen.getByLabelText('Email'), 'mismatch@example.com');
+    await userEvent.type(
+      screen.getByLabelText('Email'),
+      'mismatch@example.com',
+    );
     await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
-    await userEvent.type(screen.getByLabelText('Confirm password'), 'Harness2!');
-    await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
+    await userEvent.type(
+      screen.getByLabelText('Confirm password'),
+      'Harness2!',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: /create account and issue cookie/i }),
+    );
 
     expect(authMocks.register).not.toHaveBeenCalled();
-    expect(await screen.findByRole('alert')).toHaveTextContent(/passwords do not match/i);
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /passwords do not match/i,
+    );
   });
 
   it('auth register blocks weak passwords before submit', async () => {
@@ -121,13 +155,19 @@ describe('auth feature', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: /create account and issue cookie/i })).toBeVisible(),
+      expect(
+        screen.getByRole('button', {
+          name: /create account and issue cookie/i,
+        }),
+      ).toBeVisible(),
     );
 
     await userEvent.type(screen.getByLabelText('Email'), 'weak@example.com');
     await userEvent.type(screen.getByLabelText('Password'), 'weakpass');
     await userEvent.type(screen.getByLabelText('Confirm password'), 'weakpass');
-    await userEvent.click(screen.getByRole('button', { name: /create account and issue cookie/i }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /create account and issue cookie/i }),
+    );
 
     expect(authMocks.register).not.toHaveBeenCalled();
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -150,10 +190,20 @@ describe('auth feature', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('heading', { name: /cookie session restored/i })).toBeVisible();
-    await userEvent.click(screen.getByRole('button', { name: /logout and revoke current session/i }));
+    expect(
+      await screen.findByRole('heading', { name: /cookie session restored/i }),
+    ).toBeVisible();
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /logout and revoke current session/i,
+      }),
+    );
 
     expect(authMocks.logout).toHaveBeenCalledWith('csrf-logout');
-    expect(await screen.findByRole('heading', { name: /re-enter the operations room/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', {
+        name: /re-enter the operations room/i,
+      }),
+    ).toBeVisible();
   });
 });

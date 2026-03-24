@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../types/auth.dart';
 
@@ -23,74 +23,94 @@ abstract class AuthGateway {
   Future<void> logout();
 }
 
+abstract class TokenStore {
+  Future<void> writeToken(String token);
+  Future<String?> readToken();
+  Future<void> clearToken();
+}
+
+class SecureTokenStore implements TokenStore {
+  const SecureTokenStore({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
+
+  final FlutterSecureStorage _storage;
+
+  @override
+  Future<void> clearToken() {
+    return _storage.delete(key: _tokenStorageKey);
+  }
+
+  @override
+  Future<String?> readToken() {
+    return _storage.read(key: _tokenStorageKey);
+  }
+
+  @override
+  Future<void> writeToken(String token) {
+    return _storage.write(key: _tokenStorageKey, value: token);
+  }
+}
+
+class InMemoryTokenStore implements TokenStore {
+  String? _token;
+
+  @override
+  Future<void> clearToken() async {
+    _token = null;
+  }
+
+  @override
+  Future<String?> readToken() async => _token;
+
+  @override
+  Future<void> writeToken(String token) async {
+    _token = token;
+  }
+}
+
 class AuthService implements AuthGateway {
-  AuthService({http.Client? client}) : _client = client ?? http.Client();
+  AuthService({Dio? client, TokenStore? tokenStore})
+    : _client =
+          client ??
+          Dio(
+            BaseOptions(
+              baseUrl: _baseUrl,
+              validateStatus: (_) => true,
+              headers: const {'Content-Type': 'application/json'},
+            ),
+          ),
+      _tokenStore = tokenStore ?? const SecureTokenStore();
 
-  final http.Client _client;
+  final Dio _client;
+  final TokenStore _tokenStore;
 
-  static final Uri _baseUri = Uri.parse(
-    const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8080'),
+  static const String _baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://127.0.0.1:8080',
   );
 
   @override
   Future<User> register(Credentials credentials) async {
-    final response = await _client.post(
-      _baseUri.resolve('/api/auth/register'),
-      headers: const {
-        'Content-Type': 'application/json',
-        'X-Client-Type': 'mobile',
-      },
-      body: jsonEncode(credentials.toJson()),
-    );
-
-    final payload = _decodeJson(response);
-    if (response.statusCode != 200) {
-      throw ApiException(payload['message'] as String? ?? 'Request failed.');
-    }
-
+    final payload = await _authenticate('/api/auth/register', credentials);
     await _storeToken(payload['token'] as String);
     return User.fromJson(payload['user'] as Map<String, dynamic>);
   }
 
   @override
   Future<User> login(Credentials credentials) async {
-    final response = await _client.post(
-      _baseUri.resolve('/api/auth/login'),
-      headers: const {
-        'Content-Type': 'application/json',
-        'X-Client-Type': 'mobile',
-      },
-      body: jsonEncode(credentials.toJson()),
-    );
-
-    final payload = _decodeJson(response);
-    if (response.statusCode != 200) {
-      throw ApiException(payload['message'] as String? ?? 'Request failed.');
-    }
-
+    final payload = await _authenticate('/api/auth/login', credentials);
     await _storeToken(payload['token'] as String);
     return User.fromJson(payload['user'] as Map<String, dynamic>);
   }
 
   @override
   Future<User> getCurrentUser() async {
-    final token = await _readToken();
-    if (token == null || token.isEmpty) {
-      throw ApiException('Missing token');
-    }
-
-    final response = await _client.get(
-      _baseUri.resolve('/api/me'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+    final payload = await _request(
+      method: 'GET',
+      path: '/api/me',
+      headers: await _authorizationHeaders(),
+      clearTokenOnFailure: true,
     );
-
-    final payload = _decodeJson(response);
-    if (response.statusCode != 200) {
-      await _clearToken();
-      throw ApiException(payload['message'] as String? ?? 'Request failed.');
-    }
 
     return User.fromJson(payload['user'] as Map<String, dynamic>);
   }
@@ -103,40 +123,104 @@ class AuthService implements AuthGateway {
       return;
     }
 
-    final response = await _client.post(
-      _baseUri.resolve('/api/auth/logout'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+    await _request(
+      method: 'POST',
+      path: '/api/auth/logout',
+      headers: {'Authorization': 'Bearer $token'},
+      expectedStatus: 204,
+      failureMessage: 'Logout failed.',
     );
-
-    if (response.statusCode != 204) {
-      final payload = _decodeJson(response);
-      throw ApiException(payload['message'] as String? ?? 'Logout failed.');
-    }
-
     await _clearToken();
   }
 
-  Map<String, dynamic> _decodeJson(http.Response response) {
-    if (response.body.isEmpty) {
+  Future<Map<String, dynamic>> _authenticate(
+    String path,
+    Credentials credentials,
+  ) {
+    return _request(
+      method: 'POST',
+      path: path,
+      data: credentials.toJson(),
+      headers: const {'X-Client-Type': 'mobile'},
+    );
+  }
+
+  Future<Map<String, dynamic>> _request({
+    required String method,
+    required String path,
+    Object? data,
+    Map<String, String>? headers,
+    int expectedStatus = 200,
+    String failureMessage = 'Request failed.',
+    bool clearTokenOnFailure = false,
+  }) async {
+    final response = await _client.request<dynamic>(
+      path,
+      data: data,
+      options: Options(method: method, headers: headers),
+    );
+
+    final payload = _decodeJson(response);
+    if (response.statusCode != expectedStatus) {
+      if (clearTokenOnFailure) {
+        await _clearToken();
+      }
+      throw ApiException(payload['message'] as String? ?? failureMessage);
+    }
+
+    return payload;
+  }
+
+  Future<Map<String, String>> _authorizationHeaders() async {
+    final token = await _readToken();
+    if (token == null || token.isEmpty) {
+      throw ApiException('Missing token');
+    }
+
+    return {'Authorization': 'Bearer $token'};
+  }
+
+  Map<String, dynamic> _decodeJson(Response<dynamic> response) {
+    final data = response.data;
+    if (data == null) {
       return const {};
     }
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    if (data is Map<String, dynamic>) {
+      return data;
+    }
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    if (data is String && data.isNotEmpty) {
+      return _decodeStringPayload(data);
+    }
+    return const {};
   }
 
-  Future<void> _storeToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenStorageKey, token);
+  Map<String, dynamic> _decodeStringPayload(String payload) {
+    try {
+      final decoded = jsonDecode(payload);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      if (decoded is Map) {
+        return Map<String, dynamic>.from(decoded);
+      }
+    } on FormatException {
+      return const {};
+    }
+    return const {};
   }
 
-  Future<String?> _readToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenStorageKey);
+  Future<void> _storeToken(String token) {
+    return _tokenStore.writeToken(token);
   }
 
-  Future<void> _clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenStorageKey);
+  Future<String?> _readToken() {
+    return _tokenStore.readToken();
+  }
+
+  Future<void> _clearToken() {
+    return _tokenStore.clearToken();
   }
 }

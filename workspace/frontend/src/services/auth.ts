@@ -1,9 +1,16 @@
-import type { Credentials, MeResponse, User, WebAuthResponse } from '../types/auth';
+import type {
+  Credentials,
+  MeResponse,
+  User,
+  WebAuthResponse,
+} from '../types/auth';
 import { requestJSON } from './api';
 
 const CSRF_STORAGE_KEY = 'hed_web_csrf_token';
 
-export async function register(credentials: Credentials): Promise<WebAuthResponse> {
+export async function register(
+  credentials: Credentials,
+): Promise<WebAuthResponse> {
   const response = await requestJSON<WebAuthResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(credentials),
@@ -12,7 +19,9 @@ export async function register(credentials: Credentials): Promise<WebAuthRespons
   return response;
 }
 
-export async function login(credentials: Credentials): Promise<WebAuthResponse> {
+export async function login(
+  credentials: Credentials,
+): Promise<WebAuthResponse> {
   const response = await requestJSON<WebAuthResponse>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify(credentials),

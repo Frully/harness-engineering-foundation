@@ -58,9 +58,10 @@ if ! curl -fsS "http://127.0.0.1:${BACKEND_PORT}/healthz" >/dev/null 2>&1; then
 fi
 
 cd "$FRONTEND_DIR"
-npm install
-VITE_API_BASE_URL="http://127.0.0.1:${BACKEND_PORT}" npm run build >/dev/null
-VITE_API_BASE_URL="http://127.0.0.1:${BACKEND_PORT}" npm run preview -- --host 127.0.0.1 --port "$FRONTEND_PORT" >"$FRONTEND_LOG" 2>&1 &
+corepack enable
+pnpm install --frozen-lockfile
+VITE_API_BASE_URL="http://127.0.0.1:${BACKEND_PORT}" pnpm run build >/dev/null
+VITE_API_BASE_URL="http://127.0.0.1:${BACKEND_PORT}" pnpm exec vite preview --host 127.0.0.1 --port "$FRONTEND_PORT" >"$FRONTEND_LOG" 2>&1 &
 FRONTEND_PID=$!
 
 for _ in $(seq 1 30); do
@@ -77,4 +78,4 @@ if ! curl -fsS "http://127.0.0.1:${FRONTEND_PORT}" >/dev/null 2>&1; then
 fi
 
 printf 'frontend smoke: running Playwright\n'
-PLAYWRIGHT_BASE_URL="http://127.0.0.1:${FRONTEND_PORT}" npx playwright test
+PLAYWRIGHT_BASE_URL="http://127.0.0.1:${FRONTEND_PORT}" pnpm exec playwright test

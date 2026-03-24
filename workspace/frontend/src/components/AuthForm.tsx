@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
 import {
+  type Credentials,
   passwordPolicyHint,
   validateRegisterCredentials,
-  type Credentials,
 } from '../types/auth';
 
 type Props = {
@@ -48,7 +48,9 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       });
     } catch (submissionError) {
       const message =
-        submissionError instanceof Error ? submissionError.message : 'The request could not finish.';
+        submissionError instanceof Error
+          ? submissionError.message
+          : 'The request could not finish.';
       setError(message);
     } finally {
       setIsSubmitting(false);

@@ -18,8 +18,14 @@ export const passwordPolicyHint =
 
 const symbolPattern = /[!@#$%^&*()_+\-=[\]{}|;:,.<>/?~`]/;
 
-export function validateRegisterCredentials(credentials: Credentials): string | null {
-  if (!credentials.email.trim() || !credentials.password.trim() || !credentials.confirmPassword?.trim()) {
+export function validateRegisterCredentials(
+  credentials: Credentials,
+): string | null {
+  if (
+    !credentials.email.trim() ||
+    !credentials.password.trim() ||
+    !credentials.confirmPassword?.trim()
+  ) {
     return 'Email, password, and password confirmation are all required.';
   }
 

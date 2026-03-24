@@ -23,7 +23,9 @@ export async function requestJSON<T>(
   });
 
   if (!response.ok) {
-    const errorBody = (await response.json().catch(() => ({ message: 'request failed' }))) as {
+    const errorBody = (await response
+      .json()
+      .catch(() => ({ message: 'request failed' }))) as {
       message?: string;
     };
     throw new ApiError(errorBody.message ?? 'request failed', response.status);

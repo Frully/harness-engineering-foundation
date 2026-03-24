@@ -105,7 +105,9 @@ export function App() {
         <section className="status-panel" aria-label="Loading">
           <p className="eyebrow">Booting session</p>
           <h1>Rehydrating the editorial shell.</h1>
-          <p className="muted">Checking the secure cookie and restoring your live view.</p>
+          <p className="muted">
+            Checking the secure cookie and restoring your live view.
+          </p>
         </section>
       </main>
     );

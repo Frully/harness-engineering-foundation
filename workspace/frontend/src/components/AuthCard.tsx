@@ -30,8 +30,8 @@ export function AuthCard({
         {children}
         <div className="card-footer">{footer}</div>
         <p className="muted small">
-          The web shell never touches the HttpOnly session cookie. It only keeps the readable CSRF
-          token needed for protected writes.
+          The web shell never touches the HttpOnly session cookie. It only keeps
+          the readable CSRF token needed for protected writes.
         </p>
         <Link className="ghost-link" to="/">
           Return to the signal deck

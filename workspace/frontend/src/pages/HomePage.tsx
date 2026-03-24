@@ -13,8 +13,8 @@ export function HomePage({
         <p className="eyebrow">Authenticated signal</p>
         <h1>Cookie session restored.</h1>
         <p className="hero-copy">
-          This shell recovered the current operator via <code>GET /api/me</code> while keeping the
-          session token inaccessible to JavaScript.
+          This shell recovered the current operator via <code>GET /api/me</code>{' '}
+          while keeping the session token inaccessible to JavaScript.
         </p>
 
         <div className="stats-grid">
@@ -32,7 +32,11 @@ export function HomePage({
           </article>
         </div>
 
-        <button className="primary-button" onClick={() => void onLogout()} type="button">
+        <button
+          className="primary-button"
+          onClick={() => void onLogout()}
+          type="button"
+        >
           Logout and revoke current session
         </button>
       </section>

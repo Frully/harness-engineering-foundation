@@ -99,13 +99,13 @@ class _HarnessMobileAppState extends State<HarnessMobileApp> {
       home: switch (_sessionView) {
         SessionLoading() => const LoadingScreen(),
         SessionAnonymous() => AuthFlow(
-            onLogin: _handleLogin,
-            onRegister: _handleRegister,
-          ),
+          onLogin: _handleLogin,
+          onRegister: _handleRegister,
+        ),
         SessionAuthenticated(:final user) => HomeScreen(
-            user: user,
-            onLogout: _handleLogout,
-          ),
+          user: user,
+          onLogout: _handleLogout,
+        ),
       },
     );
   }
@@ -150,11 +150,7 @@ class SessionAuthenticated extends SessionView {
 }
 
 class AuthFlow extends StatefulWidget {
-  const AuthFlow({
-    super.key,
-    required this.onLogin,
-    required this.onRegister,
-  });
+  const AuthFlow({super.key, required this.onLogin, required this.onRegister});
 
   final Future<void> Function(Credentials credentials) onLogin;
   final Future<void> Function(Credentials credentials) onRegister;

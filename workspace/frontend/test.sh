@@ -7,5 +7,6 @@ FRONTEND_DIR="$ROOT_DIR/workspace/frontend"
 
 printf 'frontend test: vitest\n'
 cd "$FRONTEND_DIR"
-npm install
-npm run test -- --run
+corepack enable
+pnpm install --frozen-lockfile
+pnpm run test -- --run

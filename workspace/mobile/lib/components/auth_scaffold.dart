@@ -38,7 +38,9 @@ class AuthScaffold extends StatelessWidget {
                 child: Card(
                   color: const Color(0xFFFFFAF2),
                   elevation: 8,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(28),
                     child: Column(
@@ -47,13 +49,17 @@ class AuthScaffold extends StatelessWidget {
                       children: [
                         Text(
                           eyebrow,
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
                                 letterSpacing: 2.4,
                                 color: const Color(0xFF70594E),
                               ),
                         ),
                         const SizedBox(height: 12),
-                        Text(title, style: Theme.of(context).textTheme.displayMedium),
+                        Text(
+                          title,
+                          style: Theme.of(context).textTheme.displayMedium,
+                        ),
                         const SizedBox(height: 24),
                         child,
                         const SizedBox(height: 20),

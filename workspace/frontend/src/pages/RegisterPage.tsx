@@ -15,11 +15,16 @@ export function RegisterPage({
       subtitle="Registration immediately creates the shared backend session, sets the secure cookie, and returns the readable CSRF token."
       footer={
         <p>
-          Already provisioned? <Link to="/login">Return to the sign in console.</Link>
+          Already provisioned?{' '}
+          <Link to="/login">Return to the sign in console.</Link>
         </p>
       }
     >
-      <AuthForm actionLabel="Create account and issue cookie" mode="register" onSubmit={onSubmit} />
+      <AuthForm
+        actionLabel="Create account and issue cookie"
+        mode="register"
+        onSubmit={onSubmit}
+      />
     </AuthCard>
   );
 }

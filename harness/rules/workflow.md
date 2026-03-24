@@ -19,6 +19,7 @@ Follow this order unless a task clearly requires a justified exception:
 
 - Prefer checks and tests to discover problems early.
 - During active development, prefer the smallest relevant workspace check or test over running the full repository gate after every tiny edit.
+- Prefer running the runtime's formatter or format-check command early when editing files so formatting drift is caught before the final quality gate.
 - Do not treat a change as done if `bash harness/scripts/dev.sh` has not been run after the latest meaningful edit.
 - The minimum completion loop is: make the change, run the relevant local checks while iterating, then run `bash harness/scripts/dev.sh` before finishing, and fix any reported violations.
 - Pure documentation updates under `docs/` do not require `bash harness/scripts/dev.sh` by default.

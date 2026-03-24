@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 
 :root {
   color-scheme: light;
@@ -9,13 +9,21 @@
   --card: rgba(255, 251, 244, 0.82);
   --line: rgba(32, 23, 20, 0.14);
   --muted: rgba(32, 23, 20, 0.72);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: "IBM Plex Sans", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--ink);
   background:
-    radial-gradient(circle at top left, rgba(180, 95, 42, 0.22), transparent 24rem),
-    radial-gradient(circle at bottom right, rgba(54, 79, 120, 0.16), transparent 22rem),
+    radial-gradient(
+      circle at top left,
+      rgba(180, 95, 42, 0.22),
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(54, 79, 120, 0.16),
+      transparent 22rem
+    ),
     linear-gradient(135deg, #f3ead8, #fbf8f1);
 }
 
@@ -35,7 +43,7 @@ a {
 
 h1,
 code {
-  font-family: 'Fraunces', serif;
+  font-family: "Fraunces", serif;
 }
 
 .app-shell,
@@ -66,7 +74,11 @@ code {
 .hero-panel,
 .dashboard-panel,
 .status-panel {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.52), rgba(246, 239, 226, 0.94));
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.52),
+    rgba(246, 239, 226, 0.94)
+  );
   padding: 3rem;
 }
 
@@ -83,10 +95,11 @@ code {
 .card-panel::after,
 .dashboard-panel::after,
 .status-panel::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(32, 23, 20, 0.03) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(32, 23, 20, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(32, 23, 20, 0.03) 1px, transparent 1px);
   background-size: 24px 24px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 85%);
