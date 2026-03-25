@@ -218,6 +218,9 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Normalize GHCR owner
+        run: echo "REGISTRY_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
       - name: Log in to GHCR
         uses: docker/login-action@v4.0.0
         with:
@@ -227,13 +230,13 @@ jobs:
 
       - name: Build and push backend image
         run: |
-          docker build -f workspace/backend/Dockerfile -t ghcr.io/${{ github.repository_owner }}/harness-engineering-foundation-backend:${{ github.sha }} .
-          docker push ghcr.io/${{ github.repository_owner }}/harness-engineering-foundation-backend:${{ github.sha }}
+          docker build -f workspace/backend/Dockerfile -t ghcr.io/${REGISTRY_OWNER}/harness-engineering-foundation-backend:${{ github.sha }} .
+          docker push ghcr.io/${REGISTRY_OWNER}/harness-engineering-foundation-backend:${{ github.sha }}
 
       - name: Build and push frontend image
         run: |
-          docker build -f workspace/frontend/Dockerfile --build-arg VITE_API_BASE_URL= -t ghcr.io/${{ github.repository_owner }}/harness-engineering-foundation-frontend:${{ github.sha }} .
-          docker push ghcr.io/${{ github.repository_owner }}/harness-engineering-foundation-frontend:${{ github.sha }}
+          docker build -f workspace/frontend/Dockerfile --build-arg VITE_API_BASE_URL= -t ghcr.io/${REGISTRY_OWNER}/harness-engineering-foundation-frontend:${{ github.sha }} .
+          docker push ghcr.io/${REGISTRY_OWNER}/harness-engineering-foundation-frontend:${{ github.sha }}
 
       - name: Build Flutter APK
         run: |
