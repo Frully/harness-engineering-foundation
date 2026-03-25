@@ -103,14 +103,9 @@ export function App() {
     return (
       <main className="command-shell loading-shell">
         <section className="panel panel-loading" aria-label="Loading">
-          <div className="command-strip">
-            <span>BOOT</span>
-            <span>SESSION</span>
-            <span>CHECK</span>
-          </div>
-          <p className="eyebrow">Restore session</p>
+          <p className="eyebrow">Session</p>
           <h1>Restoring session.</h1>
-          <p className="muted">Checking the current session.</p>
+          <p className="hero-copy">Checking the current session.</p>
           <div className="loading-meter" aria-hidden="true">
             <span />
           </div>

@@ -102,7 +102,7 @@ void main() {
 
       expect(find.text('Session restored.'), findsOneWidget);
       expect(find.byKey(const Key('logoutButton')), findsOneWidget);
-      expect(find.text('CONTROL TELEMETRY'), findsOneWidget);
+      expect(find.text('Signed in as'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('logoutButton')));
       await tester.pumpAndSettle();

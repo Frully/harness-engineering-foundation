@@ -9,13 +9,11 @@ class AuthForm extends StatefulWidget {
   const AuthForm({
     super.key,
     required this.actionLabel,
-    required this.description,
     required this.mode,
     required this.onSubmit,
   });
 
   final String actionLabel;
-  final String description;
   final AuthFormMode mode;
   final Future<void> Function(Credentials credentials) onSubmit;
 
@@ -80,17 +78,9 @@ class _AuthFormState extends State<AuthForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            widget.description,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 22),
-          const _FormStrip(items: ['ACCOUNT', 'ENTRY']),
-          const SizedBox(height: 18),
           _CommandField(
             key: const Key('emailField'),
             label: 'Email',
-            meta: 'IDENTITY',
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             validator: (value) => value == null || value.trim().isEmpty
@@ -101,7 +91,6 @@ class _AuthFormState extends State<AuthForm> {
           _CommandField(
             key: const Key('passwordField'),
             label: 'Password',
-            meta: 'SECRET',
             controller: _passwordController,
             obscureText: true,
             validator: (value) {
@@ -127,7 +116,6 @@ class _AuthFormState extends State<AuthForm> {
             _CommandField(
               key: const Key('confirmPasswordField'),
               label: 'Confirm password',
-              meta: 'PARITY',
               controller: _confirmPasswordController,
               obscureText: true,
               validator: (value) {
@@ -148,9 +136,19 @@ class _AuthFormState extends State<AuthForm> {
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: InterfacePalette.line),
               ),
-              child: Text(
-                passwordPolicyHint,
-                style: Theme.of(context).textTheme.bodySmall,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Password requirements',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    passwordPolicyHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
           ],
@@ -185,35 +183,10 @@ class _AuthFormState extends State<AuthForm> {
   }
 }
 
-class _FormStrip extends StatelessWidget {
-  const _FormStrip({required this.items});
-
-  final List<String> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: items
-          .map(
-            (item) => Text(
-              item,
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(letterSpacing: 2.1),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
 class _CommandField extends StatelessWidget {
   const _CommandField({
     required Key key,
     required this.label,
-    required this.meta,
     required this.controller,
     required this.validator,
     this.keyboardType,
@@ -222,7 +195,6 @@ class _CommandField extends StatelessWidget {
 
   final Key _fieldKey;
   final String label;
-  final String meta;
   final TextEditingController controller;
   final FormFieldValidator<String> validator;
   final TextInputType? keyboardType;
@@ -230,95 +202,56 @@ class _CommandField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compactHeader = constraints.maxWidth < 320;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            compactHeader
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        meta,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(color: InterfacePalette.inkSoft),
-                      ),
-                    ],
-                  )
-                : Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          label,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        meta,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(color: InterfacePalette.inkSoft),
-                      ),
-                    ],
-                  ),
-            const SizedBox(height: 8),
-            TextFormField(
-              key: _fieldKey,
-              controller: controller,
-              keyboardType: keyboardType,
-              obscureText: obscureText,
-              style: const TextStyle(
-                color: InterfacePalette.ink,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: obscureText ? '••••••••' : 'operator@harness.demo',
-                hintStyle: const TextStyle(color: InterfacePalette.inkSoft),
-                filled: true,
-                fillColor: const Color.fromRGBO(255, 255, 255, 0.72),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: const BorderSide(color: InterfacePalette.line),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: const BorderSide(color: InterfacePalette.line),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: const BorderSide(
-                    color: InterfacePalette.accentLight,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide(
-                    color: InterfacePalette.error.withValues(alpha: 0.45),
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: const BorderSide(color: InterfacePalette.error),
-                ),
-              ),
-              validator: validator,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+        const SizedBox(height: 8),
+        TextFormField(
+          key: _fieldKey,
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          style: const TextStyle(
+            color: InterfacePalette.ink,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          decoration: InputDecoration(
+            hintText: obscureText ? '••••••••' : 'name@example.com',
+            hintStyle: const TextStyle(color: InterfacePalette.inkSoft),
+            filled: true,
+            fillColor: const Color.fromRGBO(255, 255, 255, 0.72),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
             ),
-          ],
-        );
-      },
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: InterfacePalette.line),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: InterfacePalette.line),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: InterfacePalette.accentLight),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide(
+                color: InterfacePalette.error.withValues(alpha: 0.45),
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: InterfacePalette.error),
+            ),
+          ),
+          validator: validator,
+        ),
+      ],
     );
   }
 }

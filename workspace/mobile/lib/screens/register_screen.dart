@@ -25,7 +25,6 @@ class RegisterScreen extends StatelessWidget {
       onSwitch: onSwitch,
       child: AuthForm(
         actionLabel: 'Create account',
-        description: 'Enter your account details.',
         mode: AuthFormMode.register,
         onSubmit: onSubmit,
       ),
