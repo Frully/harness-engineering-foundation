@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BACKEND_DIR="$ROOT_DIR/workspace/backend"
+START_BACKEND_HELPER="$ROOT_DIR/harness/scripts/start_backend_for_smoke.sh"
 TMP_DIR="$(mktemp -d)"
 ARTIFACT_DIR="$BACKEND_DIR/.artifacts"
 DB_PATH="$TMP_DIR/smoke.sqlite"
@@ -17,36 +18,34 @@ PY
 )"
 BASE_URL="http://127.0.0.1:${PORT}"
 COOKIE_JAR="$TMP_DIR/cookies.txt"
-SERVER_LOG="$TMP_DIR/backend.log"
+ARTIFACT_RUN_DIR="$ARTIFACT_DIR/smoke"
+SERVER_LOG="$ARTIFACT_RUN_DIR/backend.log"
+BACKEND_BIN="$TMP_DIR/backend-smoke"
+PID_FILE="$TMP_DIR/backend.pid"
 
 cleanup() {
-  if [ -n "${SERVER_PID:-}" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
-    kill "$SERVER_PID" 2>/dev/null || true
-    wait "$SERVER_PID" 2>/dev/null || true
+  if [ -f "$PID_FILE" ]; then
+    SERVER_PID="$(cat "$PID_FILE")"
+    if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+      kill "$SERVER_PID" 2>/dev/null || true
+      wait "$SERVER_PID" 2>/dev/null || true
+    fi
   fi
   rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
-mkdir -p "$ARTIFACT_DIR"
+mkdir -p "$ARTIFACT_RUN_DIR"
 
 printf 'backend smoke: booting server at %s\n' "$BASE_URL"
 
-cd "$BACKEND_DIR"
-PORT="$PORT" DB_PATH="$DB_PATH" COOKIE_SECURE=false go run . >"$SERVER_LOG" 2>&1 &
-SERVER_PID=$!
-
-for _ in $(seq 1 30); do
-  if curl -fsS "$BASE_URL/healthz" >/dev/null 2>&1; then
-    break
-  fi
-  sleep 1
-done
-
-if ! curl -fsS "$BASE_URL/healthz" >/dev/null 2>&1; then
-  printf 'ERROR: backend health check never became ready\n' >&2
-  cat "$SERVER_LOG" >&2
-  exit 1
-fi
+bash "$START_BACKEND_HELPER" \
+  --output-bin "$BACKEND_BIN" \
+  --log-path "$SERVER_LOG" \
+  --pid-file "$PID_FILE" \
+  --port "$PORT" \
+  --db-path "$DB_PATH" \
+  --health-url "$BASE_URL/healthz" \
+  --label "backend smoke"
 
 printf 'backend smoke: exercising web cookie register and session restore flow\n'
 WEB_REGISTER_HEADERS="$TMP_DIR/web-register.headers"
@@ -160,4 +159,3 @@ curl -fsS -H "Authorization: Bearer $MOBILE_LOGIN_TOKEN" "$BASE_URL/api/me" >/de
 curl -fsS -o /dev/null -H "Authorization: Bearer $MOBILE_LOGIN_TOKEN" -X POST "$BASE_URL/api/auth/logout"
 
 printf 'backend smoke: PASS\n'
-cp "$SERVER_LOG" "$ARTIFACT_DIR/backend-smoke.log"

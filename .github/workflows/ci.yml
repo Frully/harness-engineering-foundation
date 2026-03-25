@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  GOPROXY: https://proxy.golang.org|direct
+
 on:
   push:
     branches:
@@ -9,7 +12,7 @@ on:
 
 jobs:
   quality-gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -26,7 +29,7 @@ jobs:
       - name: Warm backend Go modules
         run: |
           cd workspace/backend
-          go mod download
+          bash ../../harness/scripts/retry.sh 3 5 go mod download
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5.0.0
@@ -47,6 +50,7 @@ jobs:
         uses: subosito/flutter-action@v2.22.0
         with:
           channel: stable
+          cache: true
 
       - name: Install Linux desktop dependencies
         run: |
@@ -76,7 +80,7 @@ jobs:
             workspace/mobile/.artifacts
 
   android-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -96,10 +100,16 @@ jobs:
           go-version: '1.26.1'
           cache-dependency-path: workspace/backend/go.sum
 
+      - name: Warm backend Go modules
+        run: |
+          cd workspace/backend
+          bash ../../harness/scripts/retry.sh 3 5 go mod download
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.22.0
         with:
           channel: stable
+          cache: true
 
       - name: Enable KVM group perms
         run: |
@@ -144,10 +154,16 @@ jobs:
           go-version: '1.26.1'
           cache-dependency-path: workspace/backend/go.sum
 
+      - name: Warm backend Go modules
+        run: |
+          cd workspace/backend
+          bash ../../harness/scripts/retry.sh 3 5 go mod download
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.22.0
         with:
           channel: stable
+          cache: true
 
       - name: Run iOS simulator smoke
         run: bash workspace/mobile/ios_smoke.sh
@@ -162,7 +178,7 @@ jobs:
 
   release:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - quality-gate
       - android-smoke
@@ -200,6 +216,7 @@ jobs:
         uses: subosito/flutter-action@v2.22.0
         with:
           channel: stable
+          cache: true
 
       - name: Log in to GHCR
         uses: docker/login-action@v4.0.0

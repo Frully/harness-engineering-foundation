@@ -5,8 +5,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BACKEND_DIR="$ROOT_DIR/workspace/backend"
 MOBILE_DIR="$ROOT_DIR/workspace/mobile"
+START_BACKEND_HELPER="$ROOT_DIR/harness/scripts/start_backend_for_smoke.sh"
 TMP_DIR="$(mktemp -d)"
 ARTIFACT_DIR="$MOBILE_DIR/.artifacts"
+ARTIFACT_RUN_DIR="$ARTIFACT_DIR/desktop"
 BACKEND_PORT="$(python3 - <<'PY'
 import socket
 
@@ -15,18 +17,23 @@ with socket.socket() as sock:
     print(sock.getsockname()[1])
 PY
 )"
-BACKEND_LOG="$ARTIFACT_DIR/backend.log"
-FLUTTER_LOG="$ARTIFACT_DIR/flutter-smoke.log"
+BACKEND_LOG="$ARTIFACT_RUN_DIR/backend.log"
+FLUTTER_LOG="$ARTIFACT_RUN_DIR/flutter-smoke.log"
+BACKEND_BIN="$TMP_DIR/mobile-smoke-backend"
+PID_FILE="$TMP_DIR/backend.pid"
 
 cleanup() {
-  if [ -n "${BACKEND_PID:-}" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
-    kill "$BACKEND_PID" 2>/dev/null || true
-    wait "$BACKEND_PID" 2>/dev/null || true
+  if [ -f "$PID_FILE" ]; then
+    BACKEND_PID="$(cat "$PID_FILE")"
+    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+      kill "$BACKEND_PID" 2>/dev/null || true
+      wait "$BACKEND_PID" 2>/dev/null || true
+    fi
   fi
   rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
-mkdir -p "$ARTIFACT_DIR"
+mkdir -p "$ARTIFACT_RUN_DIR"
 
 case "$(uname -s)" in
   Darwin)
@@ -45,22 +52,14 @@ esac
 
 printf 'mobile smoke: booting backend %s and running Flutter integration test on %s\n' "$BACKEND_PORT" "$FLUTTER_DEVICE"
 
-cd "$BACKEND_DIR"
-PORT="$BACKEND_PORT" DB_PATH="$TMP_DIR/mobile-smoke.sqlite" COOKIE_SECURE=false go run . >"$BACKEND_LOG" 2>&1 &
-BACKEND_PID=$!
-
-for _ in $(seq 1 30); do
-  if curl -fsS "http://127.0.0.1:${BACKEND_PORT}/healthz" >/dev/null 2>&1; then
-    break
-  fi
-  sleep 1
-done
-
-if ! curl -fsS "http://127.0.0.1:${BACKEND_PORT}/healthz" >/dev/null 2>&1; then
-  printf 'ERROR: backend did not boot for mobile smoke\n' >&2
-  cat "$BACKEND_LOG" >&2
-  exit 1
-fi
+bash "$START_BACKEND_HELPER" \
+  --output-bin "$BACKEND_BIN" \
+  --log-path "$BACKEND_LOG" \
+  --pid-file "$PID_FILE" \
+  --port "$BACKEND_PORT" \
+  --db-path "$TMP_DIR/mobile-smoke.sqlite" \
+  --health-url "http://127.0.0.1:${BACKEND_PORT}/healthz" \
+  --label "mobile desktop smoke backend"
 
 cd "$MOBILE_DIR"
 flutter pub get

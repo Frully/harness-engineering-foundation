@@ -5,8 +5,10 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BACKEND_DIR="$ROOT_DIR/workspace/backend"
 MOBILE_DIR="$ROOT_DIR/workspace/mobile"
+START_BACKEND_HELPER="$ROOT_DIR/harness/scripts/start_backend_for_smoke.sh"
 TMP_DIR="$(mktemp -d)"
 ARTIFACT_DIR="$MOBILE_DIR/.artifacts"
+ARTIFACT_RUN_DIR="$ARTIFACT_DIR/ios"
 BACKEND_PORT="$(python3 - <<'PY'
 import socket
 
@@ -15,15 +17,21 @@ with socket.socket() as sock:
     print(sock.getsockname()[1])
 PY
 )"
-BACKEND_LOG="$ARTIFACT_DIR/ios-backend.log"
-FLUTTER_LOG="$ARTIFACT_DIR/ios-smoke.log"
+BACKEND_LOG="$ARTIFACT_RUN_DIR/backend.log"
+FLUTTER_LOG="$ARTIFACT_RUN_DIR/flutter.log"
+BACKEND_BIN="$TMP_DIR/mobile-ios-smoke-backend"
 SIMULATOR_DEVICE_ID=""
 CREATED_SIMULATOR_DEVICE="false"
+PID_FILE="$TMP_DIR/backend.pid"
+DIAG_DIR="$ARTIFACT_RUN_DIR/diagnostics"
 
 cleanup() {
-  if [ -n "${BACKEND_PID:-}" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
-    kill "$BACKEND_PID" 2>/dev/null || true
-    wait "$BACKEND_PID" 2>/dev/null || true
+  if [ -f "$PID_FILE" ]; then
+    BACKEND_PID="$(cat "$PID_FILE")"
+    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+      kill "$BACKEND_PID" 2>/dev/null || true
+      wait "$BACKEND_PID" 2>/dev/null || true
+    fi
   fi
 
   if [ -n "$SIMULATOR_DEVICE_ID" ]; then
@@ -36,7 +44,7 @@ cleanup() {
   rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
-mkdir -p "$ARTIFACT_DIR"
+mkdir -p "$ARTIFACT_RUN_DIR" "$DIAG_DIR"
 
 if [ "$(uname -s)" != "Darwin" ]; then
   printf 'ERROR: iOS smoke requires a macOS host.\n' >&2
@@ -47,13 +55,17 @@ DEVICES_JSON="$TMP_DIR/ios-devices.json"
 RUNTIMES_JSON="$TMP_DIR/ios-runtimes.json"
 DEVICE_TYPES_JSON="$TMP_DIR/ios-device-types.json"
 SELECTION_LOG="$ARTIFACT_DIR/ios-simulator-selection.txt"
+XCODE_LOG="$DIAG_DIR/xcode-version.txt"
+FLUTTER_DOCTOR_LOG="$DIAG_DIR/flutter-doctor.txt"
 xcrun simctl list devices available -j >"$DEVICES_JSON"
 xcrun simctl list runtimes -j >"$RUNTIMES_JSON"
 xcrun simctl list devicetypes -j >"$DEVICE_TYPES_JSON"
+flutter doctor -v >"$FLUTTER_DOCTOR_LOG" 2>&1 || true
+xcodebuild -version >"$XCODE_LOG" 2>&1 || true
 
-cp "$DEVICES_JSON" "$ARTIFACT_DIR/ios-devices.json"
-cp "$RUNTIMES_JSON" "$ARTIFACT_DIR/ios-runtimes.json"
-cp "$DEVICE_TYPES_JSON" "$ARTIFACT_DIR/ios-device-types.json"
+cp "$DEVICES_JSON" "$DIAG_DIR/ios-devices.json"
+cp "$RUNTIMES_JSON" "$DIAG_DIR/ios-runtimes.json"
+cp "$DEVICE_TYPES_JSON" "$DIAG_DIR/ios-device-types.json"
 
 SIMULATOR_SELECTION="$(
   python3 - "$DEVICES_JSON" "$RUNTIMES_JSON" "$DEVICE_TYPES_JSON" <<'PY'
@@ -203,22 +215,15 @@ open -a Simulator >/dev/null 2>&1 || true
 xcrun simctl boot "$SIMULATOR_DEVICE_ID" >/dev/null 2>&1 || true
 xcrun simctl bootstatus "$SIMULATOR_DEVICE_ID" -b
 
-cd "$BACKEND_DIR"
-PORT="$BACKEND_PORT" DB_PATH="$TMP_DIR/mobile-ios-smoke.sqlite" COOKIE_SECURE=false go run . >"$BACKEND_LOG" 2>&1 &
-BACKEND_PID=$!
-
-for _ in $(seq 1 90); do
-  if curl -fsS "http://127.0.0.1:${BACKEND_PORT}/healthz" >/dev/null 2>&1; then
-    break
-  fi
-  sleep 1
-done
-
-if ! curl -fsS "http://127.0.0.1:${BACKEND_PORT}/healthz" >/dev/null 2>&1; then
-  printf 'ERROR: backend did not boot for iOS smoke\n' >&2
-  cat "$BACKEND_LOG" >&2
-  exit 1
-fi
+bash "$START_BACKEND_HELPER" \
+  --output-bin "$BACKEND_BIN" \
+  --log-path "$BACKEND_LOG" \
+  --pid-file "$PID_FILE" \
+  --port "$BACKEND_PORT" \
+  --db-path "$TMP_DIR/mobile-ios-smoke.sqlite" \
+  --health-url "http://127.0.0.1:${BACKEND_PORT}/healthz" \
+  --health-timeout 90 \
+  --label "mobile ios smoke backend"
 
 cd "$MOBILE_DIR"
 flutter pub get

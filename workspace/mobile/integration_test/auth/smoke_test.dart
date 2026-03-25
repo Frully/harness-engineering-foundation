@@ -115,7 +115,7 @@ Future<void> expectAuthenticatedShell(WidgetTester tester, String email) async {
 }
 
 Future<void> waitForAuthCompletion(WidgetTester tester) async {
-  for (var attempt = 0; attempt < 30; attempt += 1) {
+  for (var attempt = 0; attempt < 60; attempt += 1) {
     await tester.pump(const Duration(milliseconds: 200));
 
     if (find.text('Session restored.').evaluate().isNotEmpty) {
