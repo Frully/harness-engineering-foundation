@@ -3,6 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../App';
+import {
+  webDesktopViewport,
+  webMobileViewport,
+  withViewport,
+} from '../viewports';
 
 const authMocks = vi.hoisted(() => ({
   getCurrentUser: vi.fn(),
@@ -202,4 +207,52 @@ describe('auth feature', () => {
       }),
     ).toBeVisible();
   });
+
+  for (const viewport of [webMobileViewport, webDesktopViewport]) {
+    it(`auth register stays operable across viewport ${viewport.name}`, async () => {
+      authMocks.getCurrentUser.mockRejectedValue(new Error('no session'));
+      authMocks.register.mockResolvedValue({
+        user: {
+          id: 4,
+          email: `${viewport.name}@example.com`,
+          createdAt: '2026-03-24T00:00:00Z',
+        },
+        csrfToken: `csrf-${viewport.name}`,
+      });
+
+      await withViewport(viewport, async () => {
+        render(
+          <MemoryRouter initialEntries={['/register']}>
+            <App />
+          </MemoryRouter>,
+        );
+
+        await waitFor(() =>
+          expect(
+            screen.getByRole('button', {
+              name: /create account/i,
+            }),
+          ).toBeVisible(),
+        );
+
+        await userEvent.type(
+          screen.getByLabelText('Email'),
+          `${viewport.name}@example.com`,
+        );
+        await userEvent.type(screen.getByLabelText('Password'), 'Harness1!');
+        await userEvent.type(
+          screen.getByLabelText('Confirm password'),
+          'Harness1!',
+        );
+        await userEvent.click(
+          screen.getByRole('button', { name: /^create account$/i }),
+        );
+
+        expect(
+          await screen.findByRole('heading', { name: /session restored/i }),
+        ).toBeVisible();
+        expect(screen.getByText(`${viewport.name}@example.com`)).toBeVisible();
+      });
+    });
+  }
 });

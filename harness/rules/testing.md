@@ -65,6 +65,34 @@ This document defines the minimum testing expectations for business code in the 
 - Prefer one real regression test over broad but low-signal test scaffolding.
 - When a problem repeats, strengthen the relevant test coverage instead of relying only on manual caution.
 
+## Viewport coverage rule
+
+- Frontend and mobile UI coverage should use a small set of representative viewport classes instead of an unbounded device matrix.
+- Choose viewport classes by supported product contract, layout breakpoints, and the actual devices used by CI smoke jobs.
+- Distinguish at least these viewport classes when a runtime claims responsive support:
+  - minimum supported viewport
+  - primary design viewport
+  - expanded viewport when the layout materially changes at larger sizes
+- Mobile viewport policy for this repository should use logical sizes, not physical pixels.
+- Mobile minimum supported viewport: `360 x 800`.
+- Mobile primary iOS viewport: `390 x 844`.
+- Mobile primary Android viewport: `412 x 915`.
+- Mobile expanded handset viewport: `430 x 932`.
+- Mobile tablet portrait reference: `768 x 1024`.
+- Mobile tablet landscape reference: `1024 x 768`.
+- Web minimum supported viewport width: `360`.
+- Web tablet reference width: `768`.
+- Web desktop baseline width: `1280`.
+- Widget, component, and layout tests should prefer representative viewport classes because they are faster and more stable than full device-emulator matrices.
+- Mobile viewport and orientation coverage should live primarily in widget or layout tests, not in a large emulator matrix.
+- Web viewport coverage should treat mobile browser widths as a supported runtime, not as an optional desktop-only fallback.
+- If the product supports tablets, widget coverage should verify at least one tablet portrait viewport and one tablet landscape viewport for the affected screen class.
+- Mobile CI smoke should run one representative Android handset and one representative iPhone simulator rather than many near-duplicate devices.
+- For this repository, Android smoke is the representative Android runtime gate and iOS smoke is the representative iOS runtime gate.
+- Desktop-hosted mobile smoke that exists to simulate handheld behavior should pin a representative phone viewport instead of inheriting the host desktop window size.
+- UI support at the minimum supported viewport means core journeys remain reachable and operable. It does not require every important control to be visible without scrolling.
+- When a bug is caused by a specific viewport class, add or tighten an automated test at that class in the same fix.
+
 ## Current repository state
 
 - `bash harness/scripts/verify.sh` runs all available workspace `check.sh`, `test.sh`, and `smoke.sh` hooks.

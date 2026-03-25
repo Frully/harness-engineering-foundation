@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harness_mobile/main.dart';
 import 'package:harness_mobile/services/auth_service.dart';
 import 'package:harness_mobile/types/auth.dart';
+import '../support/viewports.dart';
 
 void main() {
   testWidgets('auth login restores the authenticated mobile shell', (
@@ -59,6 +60,8 @@ void main() {
   );
 
   testWidgets('auth logout returns to the login shell', (tester) async {
+    withViewport(tester, phonePrimaryIosViewport);
+
     await tester.pumpWidget(
       HarnessMobileApp(
         authGateway: _FakeAuthGateway(
@@ -78,6 +81,35 @@ void main() {
 
     expect(find.text('Sign in.'), findsOneWidget);
   });
+
+  forEachViewport(
+    [tabletPortraitViewport, tabletLandscapeViewport],
+    'auth authenticated shell stays operable on tablet',
+    (tester, viewport) async {
+      await tester.pumpWidget(
+        HarnessMobileApp(
+          authGateway: _FakeAuthGateway(
+            initialUser: User(
+              id: 1,
+              email: '${viewport.name}@example.com',
+              createdAt: DateTime(2026, 3, 24),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Session restored.'), findsOneWidget);
+      expect(find.byKey(const Key('logoutButton')), findsOneWidget);
+      expect(find.text('CONTROL TELEMETRY'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('logoutButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign in.'), findsOneWidget);
+    },
+  );
 
   testWidgets('auth register blocks mismatched password confirmation', (
     tester,

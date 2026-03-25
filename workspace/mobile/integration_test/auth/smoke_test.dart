@@ -3,13 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:harness_mobile/main.dart';
 import 'package:harness_mobile/services/auth_service.dart';
 import 'package:integration_test/integration_test.dart';
+import '../../test/support/viewports.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('auth smoke register enters the authenticated mobile shell', (
     tester,
   ) async {
+    await withSurfaceViewport(binding, phonePrimaryIosViewport);
     final email = smokeEmail('register');
     final tokenStore = InMemoryTokenStore();
 
@@ -22,6 +24,7 @@ void main() {
   testWidgets('auth smoke restore keeps the bearer session after app restart', (
     tester,
   ) async {
+    await withSurfaceViewport(binding, phonePrimaryIosViewport);
     final email = smokeEmail('restore');
     final tokenStore = InMemoryTokenStore();
 
@@ -39,6 +42,7 @@ void main() {
   testWidgets(
     'auth smoke login re-enters the authenticated mobile shell after logout',
     (tester) async {
+      await withSurfaceViewport(binding, phonePrimaryIosViewport);
       final email = smokeEmail('login');
       final tokenStore = InMemoryTokenStore();
 
@@ -54,6 +58,7 @@ void main() {
   testWidgets(
     'auth smoke logout returns the mobile app to the anonymous shell',
     (tester) async {
+      await withSurfaceViewport(binding, phonePrimaryIosViewport);
       final email = smokeEmail('logout');
       final tokenStore = InMemoryTokenStore();
 
@@ -98,6 +103,7 @@ Future<void> loginThroughUi(WidgetTester tester, String email) async {
 }
 
 Future<void> logoutThroughUi(WidgetTester tester) async {
+  await tester.ensureVisible(find.byKey(const Key('logoutButton')));
   await tester.tap(find.byKey(const Key('logoutButton')));
   await tester.pumpAndSettle(const Duration(seconds: 2));
   expect(find.text('Sign in.'), findsOneWidget);

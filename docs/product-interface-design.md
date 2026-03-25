@@ -100,6 +100,40 @@ The design language is shared across web and mobile, but each runtime should exp
 - If a value or pattern must diverge by runtime, keep the role, hierarchy, and material intent the same even if the exact measurement changes.
 - Avoid "close but different" drift such as matching palette but changing surface grammar, matching copy tone but changing hierarchy, or matching token names but inventing a different component language.
 
+## Viewport strategy
+
+Responsive work should be anchored to a small set of representative logical viewports instead of an open-ended device list.
+
+These viewports exist to preserve layout intent, interaction reachability, and spacing rhythm at the classes of screen the product claims to support. They are not a promise of pixel-perfect tuning for every handset or browser size.
+
+### Mobile classes
+
+- Minimum supported handset: `360 x 800`
+- Primary iPhone reference: `390 x 844`
+- Primary Android reference: `412 x 915`
+- Expanded handset reference: `430 x 932`
+- Tablet reference: `768 x 1024`
+
+Use these as logical-size anchors for layout and interaction review:
+
+- Minimum supported handset:
+  - core flows must remain reachable, legible, and operable
+  - scrolling to reach later controls is acceptable
+- Primary handset references:
+  - this is where the design should feel most intentional and complete
+  - hierarchy, spacing, and control density should read as the normal product experience
+- Expanded handset and tablet references:
+  - layouts may breathe more, but should stay cohesive and avoid empty or weak compositions
+
+### Web classes
+
+- Minimum supported mobile width: `360`
+- Tablet reference width: `768`
+- Desktop baseline width: `1280`
+- Expanded desktop reference width: `1440`
+
+Web should preserve hierarchy and compositional pressure across these widths rather than scaling linearly without judgment.
+
 ## Visual System
 
 ### Tone
