@@ -59,34 +59,25 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      <div className="form-strip">
-        <span>{mode === 'register' ? 'SESSION MINT' : 'SESSION RESUME'}</span>
-        <span>{mode === 'register' ? 'CREATE' : 'SIGN IN'}</span>
-      </div>
-
       <label className="field">
-        <span className="field-meta">
-          <span>Email</span>
-          <code>IDENTITY</code>
-        </span>
+        <span className="field-label">Email</span>
         <input
           aria-label="Email"
           autoComplete="email"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="operator@harness.demo"
+          placeholder="name@example.com"
         />
       </label>
 
       <label className="field">
-        <span className="field-meta">
-          <span>Password</span>
-          <code>SECRET</code>
-        </span>
+        <span className="field-label">Password</span>
         <input
           aria-label="Password"
-          autoComplete="current-password"
+          autoComplete={
+            mode === 'register' ? 'new-password' : 'current-password'
+          }
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -97,10 +88,7 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
       {mode === 'register' ? (
         <>
           <label className="field">
-            <span className="field-meta">
-              <span>Confirm password</span>
-              <code>PARITY</code>
-            </span>
+            <span className="field-label">Confirm password</span>
             <input
               aria-label="Confirm password"
               autoComplete="new-password"
@@ -112,7 +100,7 @@ export function AuthForm({ actionLabel, mode, onSubmit }: Props) {
           </label>
 
           <div className="command-note command-note-soft">
-            <span className="label">Password policy</span>
+            <span className="field-label">Password requirements</span>
             <p className="muted small">{passwordPolicyHint}</p>
           </div>
         </>

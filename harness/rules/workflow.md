@@ -12,16 +12,18 @@ Follow this order unless a task clearly requires a justified exception:
 4. Make the smallest useful change in business code.
 5. If the change alters durable project knowledge such as APIs, auth, testing strategy, runbooks, or deployment behavior, update `docs/` as part of the same task.
 6. If the change exposes a repeated structural problem, update `harness/` as part of the same task.
-7. When adding or materially changing UI, capture screenshots from the changed runtime and review them for design drift, layout breakage, and interaction issues before treating the work as complete.
-8. Use screenshot findings as feedback to refine the implementation instead of treating the first visually plausible result as done.
-9. Run `bash harness/scripts/verify.sh` before treating the task as complete.
-10. Fix all reported violations before treating the task as complete.
+7. If the task changes user-visible design or copy for a feature that exists in more than one runtime, check the corresponding screens in the other runtime during the same task and align them unless a justified platform difference prevents it.
+8. When adding or materially changing UI, capture screenshots from the changed runtime and review them for design drift, layout breakage, and interaction issues before treating the work as complete.
+9. Use screenshot findings as feedback to refine the implementation instead of treating the first visually plausible result as done.
+10. Run `bash harness/scripts/verify.sh` before treating the task as complete.
+11. Fix all reported violations before treating the task as complete.
 
 ## Workflow notes
 
 - Prefer checks and tests to discover problems early.
 - During active development, prefer the smallest relevant workspace check or test over running the full repository gate after every tiny edit.
 - Prefer running the runtime's formatter or format-check command early when editing files so formatting drift is caught before the final quality gate.
+- Shared features should not be treated as single-runtime work by default when the task changes user-visible design or wording. Check whether frontend and mobile both expose the feature before stopping at one runtime.
 - UI work should not rely on code inspection alone. Use screenshots or equivalent visual captures to verify shared design language, spacing, hierarchy, and major interaction states.
 - Screenshot review is a feedback loop, not a one-time artifact dump. If screenshots reveal design mismatch, broken layout, clipped states, or obvious interaction issues, iterate on the implementation in the same task.
 - Do not treat a change as done if `bash harness/scripts/verify.sh` has not been run after the latest meaningful edit.

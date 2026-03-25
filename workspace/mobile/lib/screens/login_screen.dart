@@ -25,7 +25,6 @@ class LoginScreen extends StatelessWidget {
       onSwitch: onSwitch,
       child: AuthForm(
         actionLabel: 'Sign in',
-        description: 'Enter your account details.',
         mode: AuthFormMode.login,
         onSubmit: onSubmit,
       ),

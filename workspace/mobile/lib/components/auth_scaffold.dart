@@ -33,20 +33,12 @@ class AuthScaffold extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const CommandStrip(
-                    items: ['SESSION ENTRY', 'MOBILE NODE', 'ACCOUNT ACCESS'],
-                  ),
-                  const SizedBox(height: 18),
                   Text(eyebrow, style: Theme.of(context).textTheme.labelMedium),
                   const SizedBox(height: 12),
                   Text(title, style: Theme.of(context).textTheme.displayMedium),
                   const SizedBox(height: 14),
                   Text(summary, style: Theme.of(context).textTheme.bodyLarge),
-                  const SizedBox(height: 18),
-                  const SignalRail(
-                    items: ['Shared session', 'Phone ready', 'Smoke visible'],
-                  ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
                   child,
                   const SizedBox(height: 18),
                   TextButton(

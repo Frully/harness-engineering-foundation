@@ -31,6 +31,12 @@ It exists because UI wording can easily drift into filler, tone-first phrasing, 
 - Let tone show up only after the wording is already clear, brief, and functionally correct.
 - When frontend and mobile expose the same user-facing function in the same product position, reuse the frontend wording instead of rewriting it separately for mobile.
 
+## Cross-runtime alignment trigger
+
+- If a task changes user-facing copy for a feature that exists in both frontend and mobile, check the other runtime in the same task.
+- If the same function appears in both runtimes, align the wording in the same task instead of leaving the other runtime on the old copy.
+- If exact wording cannot match because of platform constraints, keep the action, state, and key nouns aligned and explain the reason in the task.
+
 ## Necessary exceptions
 
 - Add more context when the user could otherwise make a high-risk mistake.
